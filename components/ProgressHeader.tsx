@@ -9,9 +9,10 @@ interface Props {
   diagnosis?: string | null;
   totalDue: number;
   totalTaken: number;
+  isLoading?: boolean;
 }
 
-export default function ProgressHeader({ patientName, diagnosis, totalDue, totalTaken }: Props) {
+export default function ProgressHeader({ patientName, diagnosis, totalDue, totalTaken, isLoading }: Props) {
   const { tokens } = useTheme();
   const pct = totalDue > 0 ? Math.round((totalTaken / totalDue) * 100) : 0;
   const firstName = patientName?.split(' ')[0];
@@ -41,16 +42,18 @@ export default function ProgressHeader({ patientName, diagnosis, totalDue, total
             alignItems: 'center',
           }}
         >
-          <Text style={{ fontSize: 22, fontWeight: '900', color: 'white' }}>{pct}%</Text>
+          <Text style={{ fontSize: 22, fontWeight: '900', color: 'white' }}>{isLoading ? '—' : `${pct}%`}</Text>
           <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)' }}>Done</Text>
         </View>
       </View>
 
       <View style={{ marginTop: 8 }}>
         <Text style={{ fontSize: 13, fontWeight: '700', marginBottom: 5, color: 'rgba(255,255,255,0.9)' }}>
-          {pct === 100 && totalDue > 0
-            ? '🎉 All medicines taken today!'
-            : `${totalTaken} of ${totalDue} doses taken`}
+          {isLoading
+            ? 'loading…'
+            : pct === 100 && totalDue > 0
+              ? '🎉 All medicines taken today!'
+              : `${totalTaken} of ${totalDue} doses taken`}
         </Text>
         <View style={{ backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 50, height: 8, overflow: 'hidden' }}>
           <View style={{ width: `${pct}%`, backgroundColor: 'white', height: '100%', borderRadius: 50 }} />

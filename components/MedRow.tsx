@@ -13,7 +13,7 @@ interface Props {
 
 export default function MedRow({ med, slot, taken, onToggle }: Props) {
   const { tokens } = useTheme();
-  const qty = med.dosesToday[slot.id];
+  const qty = med.dosesToday[slot.id] ?? 0;
   const foodLabel = med.foodTimingLabel || 'Any Time';
 
   return (

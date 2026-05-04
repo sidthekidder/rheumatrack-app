@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { useCallback, useMemo } from 'react';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { useRouter, type Href } from 'expo-router';
 import { Pill } from 'lucide-react-native';
 import DoctorCard from '@/components/DoctorCard';
@@ -28,17 +29,21 @@ export default function HomeScreen() {
   const logQ = useMedicationLog(dateStr, dateStr);
   const toggle = useToggleTaken();
 
-  const meds = medsQ.data ?? [];
-  const todayMeds = useMemo(() => getMedsForDate(meds, dateStr), [meds, dateStr]);
+  const meds = medsQ.data;
+  const todayMeds = useMemo(
+    () => (meds ? getMedsForDate(meds, dateStr) : []),
+    [meds, dateStr],
+  );
 
+  const logEntries = logQ.data;
   const log = useMemo<Record<string, boolean>>(() => {
     const out: Record<string, boolean> = {};
-    const entries: MedicationLogEntry[] = logQ.data ?? [];
-    for (const e of entries) {
+    if (!logEntries) return out;
+    for (const e of logEntries as MedicationLogEntry[]) {
       out[`${e.logDate}_${e.medicineId}_${e.slot}`] = e.taken;
     }
     return out;
-  }, [logQ.data]);
+  }, [logEntries]);
 
   const isTaken = (medId: string, slot: SlotId): boolean =>
     log[`${dateStr}_${medId}_${slot}`] === true;
@@ -78,20 +83,35 @@ export default function HomeScreen() {
     todayMeds.some((m) => (m.dosesToday[slot.id] ?? 0) > 0)
   );
 
+  const refreshing = patientQ.isFetching || medsQ.isFetching || logQ.isFetching;
+  const onRefresh = useCallback(() => {
+    patientQ.refetch();
+    medsQ.refetch();
+    logQ.refetch();
+  }, [patientQ, medsQ, logQ]);
+
   return (
     <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1, backgroundColor: tokens.bg }}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
+      <StatusBar style="light" />
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 24 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={tokens.text2} />
+        }
+      >
         <ProgressHeader
           patientName={patient?.name}
           diagnosis={patient?.diagnosis}
           totalDue={totalDue}
           totalTaken={totalTaken}
+          isLoading={logQ.isLoading}
         />
 
         <View style={{ paddingTop: 13, paddingHorizontal: 13 }}>
           {hasError ? (
             <Text style={{ color: '#DC2626', fontSize: 13, fontWeight: '600', marginBottom: 10 }}>
-              Couldn’t load some data. Pull to refresh.
+              Couldn't load some data. Pull to refresh.
             </Text>
           ) : null}
 
@@ -122,6 +142,7 @@ export default function HomeScreen() {
               </Text>
               <Pressable
                 accessibilityRole="button"
+                // TODO: remove cast once expo-router types regenerate (T17/T20)
                 onPress={() => router.push('/scan' as Href)}
                 style={{
                   backgroundColor: '#0D9488',
@@ -153,6 +174,7 @@ export default function HomeScreen() {
           {todayMeds.length > 0 ? (
             <Pressable
               accessibilityRole="button"
+              // TODO: remove cast once expo-router types regenerate (T17/T20)
               onPress={() => router.push('/medicines' as Href)}
               style={{
                 backgroundColor: tokens.card,

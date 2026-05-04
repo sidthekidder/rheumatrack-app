@@ -14,7 +14,9 @@ export default function DoctorCard({ name, specialty, phone }: Props) {
   const { tokens } = useTheme();
 
   const open = () => {
-    Linking.openURL(`https://wa.me/${waPhone(phone)}`);
+    Linking.openURL(`https://wa.me/${waPhone(phone)}`).catch(() => {
+      /* swallow — user will see no action; ideally show a toast in v2 */
+    });
   };
 
   return (
