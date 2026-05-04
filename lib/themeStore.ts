@@ -24,8 +24,12 @@ const webStorage: StateStorage = {
 
 const nativeStorage: StateStorage = {
   getItem: (key) => SecureStore.getItemAsync(key),
-  setItem: (key, value) => SecureStore.setItemAsync(key, value),
-  removeItem: (key) => SecureStore.deleteItemAsync(key),
+  setItem: async (key, value) => {
+    await SecureStore.setItemAsync(key, value);
+  },
+  removeItem: async (key) => {
+    await SecureStore.deleteItemAsync(key);
+  },
 };
 
 const storage = Platform.OS === 'web' ? webStorage : nativeStorage;
