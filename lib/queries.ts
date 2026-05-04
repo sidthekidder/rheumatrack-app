@@ -21,6 +21,7 @@ import {
   type PatientUpdate,
   type ScanResult,
   type SlotId,
+  type UploadFile,
 } from './api';
 
 // ---------------------------------------------------------------------------
@@ -103,7 +104,7 @@ export const useDeleteMedicine = () => {
 };
 
 export const useScanPrescription = () =>
-  useMutation<ScanResult, Error, Blob | File>({
+  useMutation<ScanResult, Error, UploadFile>({
     mutationFn: (file) => scanPrescription(file),
   });
 
@@ -133,6 +134,7 @@ export const useToggleTaken = () => {
   >({
     mutationFn: (vars) => setMedicationLog(vars),
     onMutate: async (vars) => {
+      // Note: rapid double-tap can cause snapshot to capture optimistic state; onSettled invalidate reconciles.
       await qc.cancelQueries({ queryKey: queryKeys.medicationLogAll });
 
       const previousSnapshots = qc.getQueriesData<MedicationLogEntry[]>({
@@ -153,13 +155,13 @@ export const useToggleTaken = () => {
           next[idx] = { ...next[idx], taken: vars.taken };
         } else {
           const synthetic: MedicationLogEntry = {
-            id: `temp-${vars.medicineId}-${vars.logDate}-${vars.slot}`,
-            patientId: '',
+            id: `tmp-${vars.medicineId}-${vars.logDate}-${vars.slot}`,
+            patientId: data[0]?.patientId ?? '',
             medicineId: vars.medicineId,
             logDate: vars.logDate,
             slot: vars.slot,
             taken: vars.taken,
-            createdAt: '',
+            createdAt: new Date().toISOString(),
           };
           next = [...data, synthetic];
         }

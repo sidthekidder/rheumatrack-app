@@ -12,6 +12,17 @@ export type { DoseSchedule, Medicine, ScheduleType, SlotId, TaperingPhase };
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 // ---------------------------------------------------------------------------
+// ApiError
+// ---------------------------------------------------------------------------
+
+export class ApiError extends Error {
+  constructor(public status: number, public body: string) {
+    super(`API ${status}: ${body}`);
+    this.name = 'ApiError';
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Case conversion (snake_case <-> camelCase) — keys only, values untouched.
 // ---------------------------------------------------------------------------
 
@@ -70,34 +81,35 @@ export async function apiFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const authHeaders = await getAuthHeaders();
+  const isFormData =
+    typeof FormData !== 'undefined' && options.body instanceof FormData;
+
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...authHeaders,
     ...((options.headers as Record<string, string>) ?? {}),
   };
 
   let body = options.body;
-  const isJson = (headers['Content-Type'] ?? '').includes('application/json');
-  if (body && isJson && typeof body === 'string') {
-    try {
-      const parsed = JSON.parse(body);
-      body = JSON.stringify(snakeize(parsed));
-    } catch {
-      // leave as-is if not parseable
+  if (!isFormData) {
+    const isJson = (headers['Content-Type'] ?? '').includes('application/json');
+    if (body && isJson && typeof body === 'string') {
+      try {
+        const parsed = JSON.parse(body);
+        body = JSON.stringify(snakeize(parsed));
+      } catch {
+        // leave as-is if not parseable
+      }
+    } else if (body && isJson && isPlainObject(body)) {
+      body = JSON.stringify(snakeize(body));
     }
-  } else if (body && isJson && isPlainObject(body)) {
-    body = JSON.stringify(snakeize(body));
   }
 
   const res = await fetch(`${API_URL}${path}`, { ...options, headers, body });
 
   if (!res.ok) {
     const text = await res.text();
-    const err = new Error(`API ${res.status}: ${text}`) as Error & {
-      status?: number;
-    };
-    err.status = res.status;
-    throw err;
+    throw new ApiError(res.status, text);
   }
 
   if (res.status === 204) {
@@ -109,29 +121,31 @@ export async function apiFetch<T>(
   return camelize<T>(json);
 }
 
+export type UploadFile =
+  | Blob
+  | File
+  | { uri: string; name: string; type: string };
+
 export async function apiUpload<T>(
   path: string,
-  file: Blob | File,
+  file: UploadFile,
   fieldName = 'file'
 ): Promise<T> {
   const authHeaders = await getAuthHeaders();
   const form = new FormData();
-  // RN treats Blob/File the same way for FormData
+  // RN's FormData accepts the {uri,name,type} object as-is.
+  // Web FormData accepts Blob/File. Both paths flow through .append unchanged.
   form.append(fieldName, file as Blob);
 
   const res = await fetch(`${API_URL}${path}`, {
     method: 'POST',
-    headers: { ...authHeaders }, // no Content-Type; runtime sets boundary
+    headers: { ...authHeaders }, // no Content-Type — runtime sets multipart boundary
     body: form,
   });
 
   if (!res.ok) {
     const text = await res.text();
-    const err = new Error(`API ${res.status}: ${text}`) as Error & {
-      status?: number;
-    };
-    err.status = res.status;
-    throw err;
+    throw new ApiError(res.status, text);
   }
   if (res.status === 204) return undefined as unknown as T;
   const text = await res.text();
@@ -218,9 +232,44 @@ export interface MedicationLogUpsert {
   taken: boolean;
 }
 
+// Shape mirrors backend SCAN_PROMPT (app/services/scan_prompt.py).
+// camelize() converts snake_case keys from the parser to camelCase.
+export interface ParsedMedicine {
+  drugName: string;
+  brandName?: string;
+  dose?: string;
+  scheduleType?: ScheduleType;
+  doseSchedule?: DoseSchedule;
+  weekDay?: number | null;
+  excludeDays?: number[] | null;
+  taperingPhases?: TaperingPhase[] | null;
+  startDate?: string;
+  durationDays?: number | null;
+  foodTimingId?: string | null;
+  foodTimingLabel?: string | null;
+  foodTiming?: string | null;
+  reminderTime?: string | null;
+  route?: string | null;
+  tip?: string | null;
+  notes?: string | null;
+  remarks?: string | null;
+  // Tolerate parser drift / extra fields (e.g. confidence scores).
+  [key: string]: unknown;
+}
+
+export interface ParsedPrescription {
+  medicines?: ParsedMedicine[];
+  // Backend prompt uses the key "medications"; alias for forward-compat.
+  medications?: ParsedMedicine[];
+  diagnosis?: string | null;
+  doctorName?: string | null;
+  prescriptionDate?: string | null;
+  [key: string]: unknown;
+}
+
 export interface ScanResult {
   prescriptionId: string;
-  parsed: Record<string, unknown>;
+  parsed: ParsedPrescription;
 }
 
 // ---------------------------------------------------------------------------
@@ -231,8 +280,7 @@ export async function getPatient(): Promise<Patient | null> {
   try {
     return await apiFetch<Patient>('/patients/me');
   } catch (e) {
-    const err = e as Error & { status?: number };
-    if (err.status === 404) return null;
+    if (e instanceof ApiError && e.status === 404) return null;
     throw e;
   }
 }
@@ -291,5 +339,5 @@ export const setMedicationLog = (
     body: JSON.stringify(body),
   });
 
-export const scanPrescription = (file: Blob | File): Promise<ScanResult> =>
+export const scanPrescription = (file: UploadFile): Promise<ScanResult> =>
   apiUpload<ScanResult>('/scan', file, 'file');
