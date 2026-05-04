@@ -5,13 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import { Link } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Colors } from '../../constants/Colors';
+import { notify } from '../../lib/notify';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -21,8 +21,8 @@ export default function LoginScreen() {
   async function handleSignIn() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) Alert.alert('Sign In Failed', error.message);
     setLoading(false);
+    if (error) notify('Sign In Failed', error.message);
   }
 
   return (

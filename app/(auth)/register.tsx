@@ -4,13 +4,13 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Colors } from '../../constants/Colors';
+import { notify } from '../../lib/notify';
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
@@ -20,12 +20,13 @@ export default function RegisterScreen() {
   async function handleSignUp() {
     setLoading(true);
     const { error } = await supabase.auth.signUp({ email, password });
-    if (error) {
-      Alert.alert('Sign Up Failed', error.message);
-    } else {
-      Alert.alert('Check your email', 'We sent you a confirmation link.');
-    }
     setLoading(false);
+    if (error) {
+      notify('Sign Up Failed', error.message);
+      return;
+    }
+    notify('Check your email', 'We sent you a confirmation link. Sign in once your address is verified.');
+    router.replace('/(auth)/login');
   }
 
   return (

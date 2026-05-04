@@ -1,11 +1,12 @@
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { Colors } from '../../constants/Colors';
+import { notify } from '../../lib/notify';
 
 export default function ProfileScreen() {
   async function handleSignOut() {
     const { error } = await supabase.auth.signOut();
-    if (error) Alert.alert('Error', error.message);
+    if (error) notify('Error', error.message);
   }
 
   return (

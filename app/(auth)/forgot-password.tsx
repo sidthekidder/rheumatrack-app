@@ -5,11 +5,11 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
 } from 'react-native';
 import { Link } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Colors } from '../../constants/Colors';
+import { notify } from '../../lib/notify';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -18,12 +18,12 @@ export default function ForgotPasswordScreen() {
   async function handleReset() {
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) {
-      Alert.alert('Error', error.message);
-    } else {
-      Alert.alert('Email sent', 'Check your inbox for a password reset link.');
-    }
     setLoading(false);
+    if (error) {
+      notify('Error', error.message);
+      return;
+    }
+    notify('Email sent', 'Check your inbox for a password reset link.');
   }
 
   return (
