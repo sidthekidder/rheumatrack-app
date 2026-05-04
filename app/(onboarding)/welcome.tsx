@@ -74,6 +74,7 @@ export default function Welcome() {
       </View>
 
       <Pressable
+        accessibilityRole="button"
         onPress={() => router.push('/(onboarding)/patient')}
         style={{ width: '100%', borderRadius: 14, overflow: 'hidden' }}
       >

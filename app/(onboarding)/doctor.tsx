@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -9,13 +9,13 @@ import {
   View,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import ProgressDots from '../../components/ProgressDots';
 import { useTheme } from '../../lib/themeStore';
 import { useUpsertPatient } from '../../lib/queries';
 import type { PatientCreate } from '../../lib/api';
-import type { PatientForm } from './patient';
+import { useOnboardingStore } from '../../lib/onboardingStore';
 
 interface DoctorForm {
   name: string;
@@ -35,24 +35,8 @@ const SPECIALTIES = [
 export default function DoctorDetails() {
   const router = useRouter();
   const { tokens } = useTheme();
-  const params = useLocalSearchParams<{ p?: string }>();
   const upsert = useUpsertPatient();
-
-  const patient: PatientForm = useMemo(() => {
-    try {
-      if (typeof params.p === 'string') return JSON.parse(params.p);
-    } catch {
-      // ignore malformed param
-    }
-    return {
-      name: '',
-      age: '',
-      patientId: '',
-      city: '',
-      state: '',
-      country: '',
-    };
-  }, [params.p]);
+  const patient = useOnboardingStore((s) => s.patient);
 
   const [d, setD] = useState<DoctorForm>({
     name: '',
@@ -62,7 +46,9 @@ export default function DoctorDetails() {
   });
   const [errMsg, setErrMsg] = useState<string | null>(null);
 
-  const submitValid = d.name.trim().length > 0 && d.phone.trim().length > 0;
+  const phoneDigits = d.phone.replace(/\D/g, '');
+  const phoneValid = phoneDigits.length >= 10;
+  const submitValid = d.name.trim().length > 0 && phoneValid;
 
   const buildPayload = (includeDoctor: boolean): PatientCreate => {
     const body: PatientCreate = {
@@ -84,8 +70,14 @@ export default function DoctorDetails() {
 
   const submit = (includeDoctor: boolean) => {
     setErrMsg(null);
+    if (includeDoctor && !submitValid) return;
     upsert.mutate(buildPayload(includeDoctor), {
-      onSuccess: () => router.replace('/(tabs)'),
+      onSettled: (_data, error) => {
+        if (!error) {
+          // Auth gate handles routing to /(tabs) once usePatient refetches.
+          useOnboardingStore.getState().reset();
+        }
+      },
       onError: (e) => setErrMsg(e.message ?? 'Failed to save patient'),
     });
   };
@@ -122,7 +114,7 @@ export default function DoctorDetails() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: tokens.bg }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
@@ -135,6 +127,7 @@ export default function DoctorDetails() {
           style={{ paddingTop: 28, paddingHorizontal: 18, paddingBottom: 18 }}
         >
           <Pressable
+            accessibilityRole="button"
             onPress={() => router.back()}
             style={{
               backgroundColor: 'rgba(255,255,255,0.2)',
@@ -200,15 +193,17 @@ export default function DoctorDetails() {
             }}
           >
             {SPECIALTIES.map((s) => {
-              const sel = d.specialty === s;
+              const isSelected = d.specialty === s;
               return (
                 <Pressable
                   key={s}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isSelected }}
                   onPress={() => setD({ ...d, specialty: s })}
                   style={{
-                    backgroundColor: sel ? '#0D9488' : tokens.card,
+                    backgroundColor: isSelected ? '#0D9488' : tokens.card,
                     borderWidth: 1,
-                    borderColor: sel ? '#0D9488' : tokens.border,
+                    borderColor: isSelected ? '#0D9488' : tokens.border,
                     borderRadius: 999,
                     paddingVertical: 7,
                     paddingHorizontal: 12,
@@ -216,7 +211,7 @@ export default function DoctorDetails() {
                 >
                   <Text
                     style={{
-                      color: sel ? 'white' : tokens.text,
+                      color: isSelected ? 'white' : tokens.text,
                       fontWeight: '700',
                       fontSize: 13,
                     }}
@@ -276,6 +271,8 @@ export default function DoctorDetails() {
 
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: busy }}
               disabled={busy}
               onPress={() => submit(false)}
               style={{
@@ -301,6 +298,8 @@ export default function DoctorDetails() {
             </Pressable>
 
             <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !submitValid || busy }}
               disabled={!submitValid || busy}
               onPress={() => submit(true)}
               style={{ flex: 2, borderRadius: 12, overflow: 'hidden' }}

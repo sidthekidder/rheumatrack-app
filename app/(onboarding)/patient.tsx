@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,27 +12,13 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import ProgressDots from '../../components/ProgressDots';
 import { useTheme } from '../../lib/themeStore';
-
-export interface PatientForm {
-  name: string;
-  age: string;
-  patientId: string;
-  city: string;
-  state: string;
-  country: string;
-}
+import { useOnboardingStore } from '../../lib/onboardingStore';
 
 export default function PatientDetails() {
   const router = useRouter();
   const { tokens } = useTheme();
-  const [p, setP] = useState<PatientForm>({
-    name: '',
-    age: '',
-    patientId: '',
-    city: '',
-    state: 'Maharashtra',
-    country: 'India',
-  });
+  const p = useOnboardingStore((s) => s.patient);
+  const setPatient = useOnboardingStore((s) => s.setPatient);
 
   const valid = p.name.trim().length > 0 && p.city.trim().length > 0;
 
@@ -67,7 +52,7 @@ export default function PatientDetails() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: tokens.bg }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
@@ -80,6 +65,7 @@ export default function PatientDetails() {
           style={{ paddingTop: 28, paddingHorizontal: 18, paddingBottom: 18 }}
         >
           <Pressable
+            accessibilityRole="button"
             onPress={() => router.back()}
             style={{
               backgroundColor: 'rgba(255,255,255,0.2)',
@@ -111,7 +97,7 @@ export default function PatientDetails() {
           <Lbl>Full Name *</Lbl>
           <TextInput
             value={p.name}
-            onChangeText={(v) => setP({ ...p, name: v })}
+            onChangeText={(v) => setPatient({ ...p, name: v })}
             placeholder="e.g. Rajesh Kumar"
             placeholderTextColor={tokens.text2}
             style={inp}
@@ -122,7 +108,7 @@ export default function PatientDetails() {
               <Lbl>Age</Lbl>
               <TextInput
                 value={p.age}
-                onChangeText={(v) => setP({ ...p, age: v })}
+                onChangeText={(v) => setPatient({ ...p, age: v })}
                 placeholder="55"
                 placeholderTextColor={tokens.text2}
                 keyboardType="number-pad"
@@ -133,7 +119,7 @@ export default function PatientDetails() {
               <Lbl>Patient ID</Lbl>
               <TextInput
                 value={p.patientId}
-                onChangeText={(v) => setP({ ...p, patientId: v })}
+                onChangeText={(v) => setPatient({ ...p, patientId: v })}
                 placeholder="optional"
                 placeholderTextColor={tokens.text2}
                 style={inp}
@@ -144,7 +130,7 @@ export default function PatientDetails() {
           <Lbl>City *</Lbl>
           <TextInput
             value={p.city}
-            onChangeText={(v) => setP({ ...p, city: v })}
+            onChangeText={(v) => setPatient({ ...p, city: v })}
             placeholder="e.g. Nagpur"
             placeholderTextColor={tokens.text2}
             style={inp}
@@ -155,7 +141,7 @@ export default function PatientDetails() {
               <Lbl>State</Lbl>
               <TextInput
                 value={p.state}
-                onChangeText={(v) => setP({ ...p, state: v })}
+                onChangeText={(v) => setPatient({ ...p, state: v })}
                 placeholderTextColor={tokens.text2}
                 style={inp}
               />
@@ -164,7 +150,7 @@ export default function PatientDetails() {
               <Lbl>Country</Lbl>
               <TextInput
                 value={p.country}
-                onChangeText={(v) => setP({ ...p, country: v })}
+                onChangeText={(v) => setPatient({ ...p, country: v })}
                 placeholderTextColor={tokens.text2}
                 style={inp}
               />
@@ -172,13 +158,12 @@ export default function PatientDetails() {
           </View>
 
           <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !valid }}
             disabled={!valid}
             onPress={() => {
               if (!valid) return;
-              router.push({
-                pathname: '/(onboarding)/doctor',
-                params: { p: JSON.stringify(p) },
-              });
+              router.push('/(onboarding)/doctor');
             }}
             style={{ borderRadius: 13, overflow: 'hidden' }}
           >
