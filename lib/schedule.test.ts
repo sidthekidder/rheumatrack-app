@@ -22,8 +22,6 @@ const DAY_3 = '2026-01-04'; // Sun (dow=0)
 const DAY_4 = '2026-01-05'; // Mon (dow=1)
 const BEFORE = '2025-12-31';
 
-const emptyDoses: DoseSchedule = { morning: 0, afternoon: 0, evening: 0, night: 0 };
-
 const makeMed = (overrides: Partial<Medicine> = {}): Medicine => ({
   id: 'med-1',
   patientId: 'patient-1',
@@ -244,6 +242,3 @@ describe('getMedsForDate', () => {
     expect(getMedsForDate([med], START)).toEqual([]);
   });
 });
-
-// keep unused import-free
-void emptyDoses;

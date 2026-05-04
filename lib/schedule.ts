@@ -1,6 +1,6 @@
-import { SLOTS } from '@/constants/slots';
+import { SLOTS, type SlotId } from '@/constants/slots';
 
-export type SlotId = 'morning' | 'afternoon' | 'evening' | 'night';
+export type { SlotId };
 export type ScheduleType = 'daily' | 'weekly' | 'alternate' | 'tapering';
 
 export type DoseSchedule = {
@@ -21,7 +21,7 @@ export interface Medicine {
   scheduleType: ScheduleType;
   doseSchedule: DoseSchedule;
   weekDay?: number | null;
-  excludeDays?: number[];
+  excludeDays?: number[] | null;
   taperingPhases?: TaperingPhase[] | null;
   startDate: string; // "YYYY-MM-DD"
   durationDays?: number | null;
