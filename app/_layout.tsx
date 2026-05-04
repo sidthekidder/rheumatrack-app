@@ -3,20 +3,41 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { Session } from '@supabase/supabase-js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { usePatient } from '../lib/queries';
 
 function useAuthGuard(session: Session | null, initialised: boolean) {
   const segments = useSegments();
   const router = useRouter();
+  const { data: patient, isLoading: patientLoading } = usePatient({
+    enabled: !!session,
+  });
 
   useEffect(() => {
     if (!initialised) return;
-    const inAuthGroup = segments[0] === '(auth)';
-    if (!session && !inAuthGroup) {
-      router.replace('/(auth)/login');
-    } else if (session && inAuthGroup) {
+    const group = segments[0];
+
+    if (!session) {
+      if (group !== '(auth)') router.replace('/(auth)/login');
+      return;
+    }
+
+    if (patientLoading) return;
+
+    if (patient == null) {
+      if (group !== '(onboarding)') router.replace('/(onboarding)/welcome');
+      return;
+    }
+
+    if (group === '(auth)' || group === '(onboarding)') {
       router.replace('/(tabs)');
     }
-  }, [session, segments, initialised]);
+  }, [session, segments, initialised, patientLoading, patient, router]);
+}
+
+function Gate({ session, initialised }: { session: Session | null; initialised: boolean }) {
+  useAuthGuard(session, initialised);
+  if (!initialised) return null;
+  return <Slot />;
 }
 
 export default function RootLayout() {
@@ -43,13 +64,9 @@ export default function RootLayout() {
     return () => subscription.unsubscribe();
   }, []);
 
-  useAuthGuard(session, initialised);
-
-  if (!initialised) return null;
-
   return (
     <QueryClientProvider client={queryClient}>
-      <Slot />
+      <Gate session={session} initialised={initialised} />
     </QueryClientProvider>
   );
 }

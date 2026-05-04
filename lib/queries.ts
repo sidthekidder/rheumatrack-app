@@ -40,10 +40,11 @@ export const queryKeys = {
 // Queries
 // ---------------------------------------------------------------------------
 
-export const usePatient = () =>
+export const usePatient = (opts: { enabled?: boolean } = {}) =>
   useQuery<Patient | null>({
     queryKey: queryKeys.patient,
     queryFn: getPatient,
+    enabled: opts.enabled ?? true,
   });
 
 export const useMedicines = () =>
