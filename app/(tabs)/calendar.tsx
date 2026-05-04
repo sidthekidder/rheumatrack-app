@@ -295,19 +295,19 @@ export default function CalendarScreen() {
                 <View style={{ flex: 1 }}>
                   <ComplianceLine
                     color="#16A34A"
-                    label="● All taken"
+                    label="All taken"
                     days={greenDays}
                     text={tokens.text}
                   />
                   <ComplianceLine
                     color="#F59E0B"
-                    label="● Some missed"
+                    label="Some missed"
                     days={yellowDays}
                     text={tokens.text}
                   />
                   <ComplianceLine
                     color="#EF4444"
-                    label="● None taken"
+                    label="None taken"
                     days={redDays}
                     text={tokens.text}
                     last

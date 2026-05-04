@@ -38,6 +38,15 @@ describe('today', () => {
   it('returns ISO YYYY-MM-DD for current date', () => {
     expect(today()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
+  it('returns local-date YYYY-MM-DD (not UTC) for given system time', () => {
+    // Local 2:30 PM on May 15, 2026 — local-date string must reflect that.
+    jest.useFakeTimers().setSystemTime(new Date(2026, 4, 15, 14, 30));
+    try {
+      expect(today()).toBe('2026-05-15');
+    } finally {
+      jest.useRealTimers();
+    }
+  });
 });
 
 describe('fromStr', () => {

@@ -20,12 +20,11 @@ interface MonthGridProps {
   onDayPress: (dateStr: string) => void;
 }
 
-const COLOR_BG: Record<MonthCellColor, string> = {
+const COLOR_BG: Record<Exclude<MonthCellColor, 'future'>, string> = {
   green: '#16A34A',
   yellow: '#F59E0B',
   red: '#EF4444',
   none: 'transparent',
-  future: 'transparent',
 };
 
 const COLOR_FG_WHITE = new Set<MonthCellColor>(['green', 'yellow', 'red']);
@@ -74,11 +73,16 @@ export default function MonthGrid({ cells, onDayPress }: MonthGridProps) {
           }
 
           const bg =
-            c.color === 'none' ? tokens.card2 : COLOR_BG[c.color] ?? tokens.card2;
+            c.isFuture || c.color === 'future'
+              ? 'transparent'
+              : c.color === 'none'
+                ? tokens.card2
+                : COLOR_BG[c.color];
           const textColor = COLOR_FG_WHITE.has(c.color) ? 'white' : tokens.text2;
 
-          const borderWidth = c.isToday ? 3 : c.isFuture ? 1 : 0;
-          const borderColor = c.isToday ? '#0D9488' : tokens.border;
+          // Uniform 1px border on every cell so today's teal ring doesn't shrink the inner area.
+          const borderWidth = 1;
+          const borderColor = c.isFuture ? tokens.border : 'transparent';
           const borderStyle: 'solid' | 'dashed' = c.isFuture ? 'dashed' : 'solid';
 
           return (
@@ -102,6 +106,21 @@ export default function MonthGrid({ cells, onDayPress }: MonthGridProps) {
                   opacity: c.isFuture ? 0.4 : 1,
                 }}
               >
+                {c.isToday ? (
+                  <View
+                    pointerEvents="none"
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      borderRadius: 9,
+                      borderWidth: 3,
+                      borderColor: '#0D9488',
+                    }}
+                  />
+                ) : null}
                 <Text
                   style={{
                     fontSize: 14,

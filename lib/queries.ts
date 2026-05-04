@@ -1,4 +1,5 @@
 import {
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -58,6 +59,7 @@ export const useMedicationLog = (from: string, to: string) =>
     queryKey: queryKeys.medicationLog(from, to),
     queryFn: () => getMedicationLog(from, to),
     enabled: Boolean(from) && Boolean(to),
+    placeholderData: keepPreviousData,
   });
 
 // ---------------------------------------------------------------------------

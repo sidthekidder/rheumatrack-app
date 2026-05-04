@@ -56,23 +56,32 @@ export default function DayDetailsSheet({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <Pressable
-        onPress={onClose}
-        style={{
-          flex: 1,
-          backgroundColor: 'rgba(0,0,0,0.55)',
-          justifyContent: 'flex-end',
-        }}
-      >
+      <View style={{ flex: 1 }}>
+        {/* Backdrop — absolute sibling so taps on the sheet body don't bubble here on web. */}
         <Pressable
-          // Swallow taps so they don't bubble to backdrop.
-          onPress={() => {}}
+          accessibilityRole="button"
+          accessibilityLabel="Close"
+          onPress={onClose}
           style={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: 'rgba(0,0,0,0.55)',
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            maxHeight: '75%',
             backgroundColor: tokens.card,
             borderTopLeftRadius: 22,
             borderTopRightRadius: 22,
             padding: 18,
-            maxHeight: '75%',
           }}
         >
           {/* Header */}
@@ -222,8 +231,8 @@ export default function DayDetailsSheet({
               })
             )}
           </ScrollView>
-        </Pressable>
-      </Pressable>
+        </View>
+      </View>
     </Modal>
   );
 }

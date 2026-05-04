@@ -48,7 +48,10 @@ export interface MedWithDoses extends Medicine {
 
 // --- Date / formatting helpers ---
 
-export const today = (): string => new Date().toISOString().split('T')[0];
+export const today = (): string => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
 
 export const fromStr = (s: string): Date => {
   const [y, m, d] = s.split('-').map(Number);
