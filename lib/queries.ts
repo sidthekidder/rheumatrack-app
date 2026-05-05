@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-query';
 import {
   bulkCreateMedicines,
+  createMedicine,
   deleteMedicine,
   getMedicationLog,
   getPatient,
@@ -16,6 +17,7 @@ import {
   upsertPatient,
   type MedicationLogEntry,
   type MedicationLogUpsert,
+  type Medicine,
   type MedicineCreate,
   type Patient,
   type PatientCreate,
@@ -90,6 +92,16 @@ export const useBulkCreateMedicines = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: MedicineCreate[]) => bulkCreateMedicines(body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.medicines });
+    },
+  });
+};
+
+export const useCreateMedicine = () => {
+  const qc = useQueryClient();
+  return useMutation<Medicine, Error, MedicineCreate>({
+    mutationFn: (body) => createMedicine(body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.medicines });
     },
