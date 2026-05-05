@@ -7,29 +7,71 @@ import { supabase } from '../lib/supabase';
 import { usePatient } from '../lib/queries';
 import { useReminderScheduler } from '../lib/notifications';
 
+function describeThrown(error: unknown): { headline: string; body: string } {
+  if (error instanceof Error) {
+    return {
+      headline: `${error.name}: ${error.message || '(no message)'}`,
+      body: error.stack ?? '(no stack)',
+    };
+  }
+  if (typeof error === 'string') {
+    return { headline: 'Thrown string', body: error };
+  }
+  if (error && typeof error === 'object') {
+    try {
+      // Pull non-enumerable Error-like props plus everything serialisable.
+      const e = error as Record<string, unknown>;
+      const own = Object.getOwnPropertyNames(error).reduce<Record<string, unknown>>(
+        (acc, key) => {
+          acc[key] = e[key];
+          return acc;
+        },
+        {},
+      );
+      return {
+        headline: typeof e.message === 'string' ? `Object: ${e.message}` : 'Thrown object (no message)',
+        body: JSON.stringify(own, null, 2),
+      };
+    } catch {
+      return { headline: 'Thrown object (unserialisable)', body: String(error) };
+    }
+  }
+  return { headline: 'Thrown value', body: String(error) };
+}
+
 class RootErrorBoundary extends React.Component<
   { children: React.ReactNode },
-  { error: Error | null }
+  { error: unknown; info: React.ErrorInfo | null }
 > {
-  state = { error: null as Error | null };
-  static getDerivedStateFromError(error: Error) {
+  state = { error: null as unknown, info: null as React.ErrorInfo | null };
+  static getDerivedStateFromError(error: unknown) {
     return { error };
   }
-  componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error('[RootErrorBoundary]', error, info);
+  componentDidCatch(error: unknown, info: React.ErrorInfo) {
+    const { headline, body } = describeThrown(error);
+    console.error('[RootErrorBoundary]', headline, '\n', body, '\nComponentStack:', info.componentStack);
+    this.setState({ info });
   }
   render() {
-    if (this.state.error) {
+    if (this.state.error !== null) {
+      const { headline, body } = describeThrown(this.state.error);
+      const componentStack = this.state.info?.componentStack ?? '(no component stack)';
       return (
         <ScrollView style={{ flex: 1, backgroundColor: '#1F2937' }} contentContainerStyle={{ padding: 24 }}>
           <Text style={{ color: '#F87171', fontSize: 18, fontWeight: '700', marginBottom: 12 }}>
             App crashed
           </Text>
-          <Text style={{ color: '#FCA5A5', fontSize: 14, marginBottom: 16 }}>
-            {this.state.error.name}: {this.state.error.message}
+          <Text selectable style={{ color: '#FCA5A5', fontSize: 14, marginBottom: 16 }}>
+            {headline}
+          </Text>
+          <Text selectable style={{ color: '#E5E7EB', fontFamily: 'monospace', fontSize: 11, marginBottom: 16 }}>
+            {body}
+          </Text>
+          <Text style={{ color: '#FCD34D', fontSize: 13, fontWeight: '700', marginBottom: 8 }}>
+            Component stack
           </Text>
           <Text selectable style={{ color: '#E5E7EB', fontFamily: 'monospace', fontSize: 11 }}>
-            {this.state.error.stack ?? '(no stack)'}
+            {componentStack}
           </Text>
         </ScrollView>
       );
