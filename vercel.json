@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx expo export -p web && node scripts/post-build.mjs",
+  "buildCommand": "npx expo export -p web --no-minify --source-maps && node scripts/post-build.mjs",
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/scan", "destination": "/index.html" },

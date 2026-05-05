@@ -54,11 +54,24 @@ body {
 const erudaBootstrap = `
 (function () {
   try {
-    if (new URLSearchParams(window.location.search).get('debug') !== '1') return;
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/eruda';
-    s.onload = function () { window.eruda && window.eruda.init(); };
-    document.head.appendChild(s);
+    var qs = new URLSearchParams(window.location.search);
+
+    // ?signout=1 — emergency escape hatch when the UI is unreachable.
+    // Clears Supabase's localStorage session + cached query state, then reloads.
+    if (qs.get('signout') === '1') {
+      try { window.localStorage.clear(); } catch (e) {}
+      try { window.sessionStorage.clear(); } catch (e) {}
+      // Strip the query so we don't loop on the next load.
+      window.location.replace(window.location.pathname);
+      return;
+    }
+
+    if (qs.get('debug') === '1') {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/eruda';
+      s.onload = function () { window.eruda && window.eruda.init(); };
+      document.head.appendChild(s);
+    }
   } catch (e) {}
 })();
 `;
