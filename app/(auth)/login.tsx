@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  ActivityIndicator,
   View,
   Text,
   TextInput,
@@ -21,8 +22,14 @@ export default function LoginScreen() {
   async function handleSignIn() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) notify('Sign In Failed', error.message);
+    if (error) {
+      setLoading(false);
+      notify('Sign In Failed', error.message);
+      return;
+    }
+    // On success keep the spinner — the auth gate will route us away once the
+    // session listener fires and the patient query resolves; this screen will
+    // unmount before we'd ever clear loading.
   }
 
   return (
@@ -50,8 +57,19 @@ export default function LoginScreen() {
         autoComplete="current-password"
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleSignIn} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Signing in…' : 'Sign In'}</Text>
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={handleSignIn}
+        disabled={loading}
+      >
+        {loading ? (
+          <View style={styles.buttonRow}>
+            <ActivityIndicator size="small" color="#fff" />
+            <Text style={styles.buttonText}>Signing in…</Text>
+          </View>
+        ) : (
+          <Text style={styles.buttonText}>Sign In</Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.footer}>
@@ -67,6 +85,8 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: 'bold', marginBottom: 32, textAlign: 'center', color: Colors.text },
   input: { borderWidth: 1, borderColor: Colors.border, borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 16 },
   button: { backgroundColor: Colors.primary, borderRadius: 8, padding: 14, alignItems: 'center' },
+  buttonDisabled: { opacity: 0.7 },
+  buttonRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   buttonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
   footer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 },
   link: { color: Colors.primary, fontSize: 14 },
