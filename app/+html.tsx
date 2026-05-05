@@ -30,6 +30,10 @@ export default function Root({ children }: { children: React.ReactNode }) {
 
         {/* Using raw CSS styles as an escape-hatch to ensure the background color never flickers in dark-mode. */}
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
+
+        {/* On-device console: append ?debug=1 to the URL to load eruda. Lets us
+            inspect runtime errors from a phone when chrome devtools isn't available. */}
+        <script dangerouslySetInnerHTML={{ __html: erudaBootstrap }} />
         {/* Add any additional <head> elements that you want globally available on web... */}
       </head>
       <body>{children}</body>
@@ -46,3 +50,15 @@ body {
     background-color: #000;
   }
 }`;
+
+const erudaBootstrap = `
+(function () {
+  try {
+    if (new URLSearchParams(window.location.search).get('debug') !== '1') return;
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/eruda';
+    s.onload = function () { window.eruda && window.eruda.init(); };
+    document.head.appendChild(s);
+  } catch (e) {}
+})();
+`;
