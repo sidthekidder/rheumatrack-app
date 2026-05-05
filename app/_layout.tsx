@@ -4,6 +4,7 @@ import { Session } from '@supabase/supabase-js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { usePatient } from '../lib/queries';
+import { useReminderScheduler } from '../lib/notifications';
 
 function useAuthGuard(session: Session | null, initialised: boolean) {
   const segments = useSegments();
@@ -36,6 +37,7 @@ function useAuthGuard(session: Session | null, initialised: boolean) {
 
 function Gate({ session, initialised }: { session: Session | null; initialised: boolean }) {
   useAuthGuard(session, initialised);
+  useReminderScheduler();
   if (!initialised) return null;
   return <Slot />;
 }

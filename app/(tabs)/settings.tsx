@@ -26,7 +26,8 @@ import {
   User,
 } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { usePatchPatient, usePatient } from '@/lib/queries';
+import { useMedicines, usePatchPatient, usePatient } from '@/lib/queries';
+import { requestPermissions, scheduleAllReminders } from '@/lib/notifications';
 import { waPhone } from '@/lib/schedule';
 import { supabase } from '@/lib/supabase';
 import { useTheme, type ThemeMode } from '@/lib/themeStore';
@@ -60,6 +61,7 @@ export default function SettingsScreen() {
   const { tokens, mode, setMode } = useTheme();
   const patientQ = usePatient();
   const patchPatient = usePatchPatient();
+  const medsQ = useMedicines();
   const patient = patientQ.data ?? null;
 
   const [editP, setEditP] = useState(false);
@@ -159,14 +161,17 @@ export default function SettingsScreen() {
 
   const requestNotif = async () => {
     try {
-      const res = await Notifications.requestPermissionsAsync();
-      setNotifGranted(res.status === 'granted');
-      if (res.status !== 'granted') {
+      const granted = await requestPermissions();
+      setNotifGranted(granted);
+      if (!granted) {
         Alert.alert(
           'Notifications blocked',
           'Enable notifications in your system settings to receive reminders.',
         );
+        return;
       }
+      // Immediate first schedule so reminders kick in without waiting for the next med-list refetch.
+      await scheduleAllReminders(medsQ.data ?? []);
     } catch {
       Alert.alert(
         'Not supported',
