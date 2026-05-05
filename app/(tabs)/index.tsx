@@ -201,6 +201,9 @@ export default function HomeScreen() {
               name={patient.doctorName}
               specialty={patient.doctorSpecialty}
               phone={patient.doctorPhone}
+              patientName={patient.name}
+              patientId={patient.patientId}
+              diagnosis={patient.diagnosis}
             />
           ) : null}
         </View>

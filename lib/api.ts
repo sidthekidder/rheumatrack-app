@@ -341,3 +341,162 @@ export const setMedicationLog = (
 
 export const scanPrescription = (file: UploadFile): Promise<ScanResult> =>
   apiUpload<ScanResult>('/scan', file, 'file');
+
+// ---------------------------------------------------------------------------
+// Lab Reports
+// ---------------------------------------------------------------------------
+
+export interface LabResultEntry {
+  testId: string;
+  value: string;
+}
+
+export interface LabReport {
+  id: string;
+  patientId: string;
+  reportDate: string; // YYYY-MM-DD
+  results: LabResultEntry[];
+  source: 'manual' | 'scan' | string;
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface LabReportCreate {
+  reportDate: string;
+  results: LabResultEntry[];
+  source?: 'manual' | 'scan' | string;
+  notes?: string | null;
+}
+
+export const listLabReports = (): Promise<LabReport[]> =>
+  apiFetch<LabReport[]>('/lab-reports');
+
+export const createLabReport = (body: LabReportCreate): Promise<LabReport> =>
+  apiFetch<LabReport>('/lab-reports', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+
+export const deleteLabReport = (id: string): Promise<void> =>
+  apiFetch<void>(`/lab-reports/${id}`, { method: 'DELETE' });
+
+// AI lab-report scan: client posts the image + its current LAB_TESTS catalog
+// as a JSON-stringified array of [id, name, unit] triples (multipart form).
+export interface ScanLabResponse {
+  reportDate: string | null;
+  results: LabResultEntry[];
+}
+
+export async function scanLabReport(
+  file: UploadFile,
+  tests: ReadonlyArray<readonly [string, string, string]>,
+): Promise<ScanLabResponse> {
+  const authHeaders = await getAuthHeaders();
+  const form = new FormData();
+  form.append('file', file as Blob);
+  form.append('tests', JSON.stringify(tests));
+
+  const res = await fetch(`${API_URL}/scan-lab`, {
+    method: 'POST',
+    headers: { ...authHeaders },
+    body: form,
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new ApiError(res.status, text);
+  }
+  const text = await res.text();
+  if (!text) return { reportDate: null, results: [] };
+  const json: unknown = JSON.parse(text);
+  return camelize<ScanLabResponse>(json);
+}
+
+// ---------------------------------------------------------------------------
+// Flare Diary
+// ---------------------------------------------------------------------------
+
+export interface FlareEntry {
+  id: string;
+  patientId: string;
+  entryDate: string;
+  pain: number;
+  stiffnessMin: number;
+  fatigue: number;
+  joints: string[];
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface FlareEntryUpsert {
+  entryDate: string;
+  pain: number;
+  stiffnessMin: number;
+  fatigue: number;
+  joints: string[];
+  notes?: string | null;
+}
+
+export const listFlareEntries = (): Promise<FlareEntry[]> =>
+  apiFetch<FlareEntry[]>('/flare-entries');
+
+export const upsertFlareEntry = (body: FlareEntryUpsert): Promise<FlareEntry> =>
+  apiFetch<FlareEntry>('/flare-entries', {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+
+export const deleteFlareEntry = (id: string): Promise<void> =>
+  apiFetch<void>(`/flare-entries/${id}`, { method: 'DELETE' });
+
+// ---------------------------------------------------------------------------
+// Appointments
+// ---------------------------------------------------------------------------
+
+export interface Appointment {
+  id: string;
+  patientId: string;
+  appointmentDate: string;
+  appointmentTime?: string | null;
+  doctorName: string;
+  clinic?: string | null;
+  visitType: string;
+  preNotes?: string | null;
+  postNotes?: string | null;
+  completed: boolean;
+  createdAt: string;
+}
+
+export interface AppointmentCreate {
+  appointmentDate: string;
+  appointmentTime?: string | null;
+  doctorName: string;
+  clinic?: string | null;
+  visitType?: string;
+  preNotes?: string | null;
+  postNotes?: string | null;
+  completed?: boolean;
+}
+
+export type AppointmentUpdate = Partial<AppointmentCreate>;
+
+export const listAppointments = (): Promise<Appointment[]> =>
+  apiFetch<Appointment[]>('/appointments');
+
+export const createAppointment = (body: AppointmentCreate): Promise<Appointment> =>
+  apiFetch<Appointment>('/appointments', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+
+export const patchAppointment = (
+  id: string,
+  body: AppointmentUpdate,
+): Promise<Appointment> =>
+  apiFetch<Appointment>(`/appointments/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  });
+
+export const deleteAppointment = (id: string): Promise<void> =>
+  apiFetch<void>(`/appointments/${id}`, { method: 'DELETE' });

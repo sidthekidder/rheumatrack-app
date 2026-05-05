@@ -8,14 +8,39 @@ interface Props {
   name: string;
   specialty?: string | null;
   phone: string;
+  patientName?: string | null;
+  patientId?: string | null;
+  diagnosis?: string | null;
 }
 
-export default function DoctorCard({ name, specialty, phone }: Props) {
+function buildPrefilled(
+  doctor: string,
+  patient?: string | null,
+  patientId?: string | null,
+  diagnosis?: string | null,
+): string {
+  const nm = patient || 'Patient';
+  const id = patientId ? ` (ID: ${patientId})` : '';
+  const dg = diagnosis ? ` My diagnosis: ${diagnosis}.` : '';
+  return `Hello ${doctor},\nI am ${nm}${id}.${dg}\n\nSent via RheumaTrack`;
+}
+
+export default function DoctorCard({
+  name,
+  specialty,
+  phone,
+  patientName,
+  patientId,
+  diagnosis,
+}: Props) {
   const { tokens } = useTheme();
 
   const open = () => {
-    Linking.openURL(`https://wa.me/${waPhone(phone)}`).catch(() => {
-      /* swallow — user will see no action; ideally show a toast in v2 */
+    const text = encodeURIComponent(
+      buildPrefilled(name, patientName, patientId, diagnosis),
+    );
+    Linking.openURL(`https://wa.me/${waPhone(phone)}?text=${text}`).catch(() => {
+      // swallow — user will see no action; toast in a later pass.
     });
   };
 
