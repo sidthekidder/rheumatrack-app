@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -91,6 +91,29 @@ export default function ScanScreen() {
   const inReview = extracted !== null;
 
   const existingMedsCount = medsQ.data?.length ?? 0;
+
+  // PWA share-target handoff: when a patient shares a prescription PDF/image
+  // from WhatsApp into the installed PWA, a service worker (future v1.1) will
+  // intercept POST /scan and stash the file as a base64 data URI in
+  // sessionStorage under `rt-shared-file`. We pick it up here on mount.
+  // TODO(T23 v1.1): register service worker that catches POST /scan and writes to sessionStorage
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    if (typeof window === 'undefined') return;
+    const sharedJson = window.sessionStorage.getItem('rt-shared-file');
+    if (!sharedJson) return;
+    try {
+      const shared = JSON.parse(sharedJson) as {
+        uri: string;
+        mimeType: string;
+        name: string;
+      };
+      setSelectedFile(shared);
+      window.sessionStorage.removeItem('rt-shared-file');
+    } catch {
+      /* no-op: malformed handoff payload */
+    }
+  }, []);
 
   const resetAll = useCallback(() => {
     setSelectedFile(null);

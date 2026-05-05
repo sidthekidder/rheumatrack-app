@@ -30,7 +30,33 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "config": {
+        "manifest": {
+          "name": "RheumaTrack",
+          "short_name": "RheumaTrack",
+          "description": "Personal medicine reminder & health guide for Rheumatology patients",
+          "start_url": "/",
+          "display": "standalone",
+          "orientation": "portrait",
+          "background_color": "#F0FDFA",
+          "theme_color": "#0D9488",
+          "icons": [
+            { "src": "/assets/images/icon.png", "sizes": "192x192", "type": "image/png" },
+            { "src": "/assets/images/icon.png", "sizes": "512x512", "type": "image/png" }
+          ],
+          "share_target": {
+            "action": "/scan",
+            "method": "POST",
+            "enctype": "multipart/form-data",
+            "params": {
+              "title": "title",
+              "text": "text",
+              "files": [{ "name": "file", "accept": ["application/pdf", "image/*"] }]
+            }
+          }
+        }
+      }
     },
     "plugins": [
       "expo-router",

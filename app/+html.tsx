@@ -12,6 +12,16 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
+        {/* PWA: manifest + theme color so Android can install RheumaTrack and
+            so the share-target intent (e.g. WhatsApp → Share → RheumaTrack)
+            routes incoming prescription PDFs/images into the Scan tab. */}
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#0D9488" />
+        <meta name="application-name" content="RheumaTrack" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="RheumaTrack" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
         {/* 
           Disable body scrolling on web. This makes ScrollView components work closer to how they do on native. 
           However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
