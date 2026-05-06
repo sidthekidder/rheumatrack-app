@@ -68,6 +68,12 @@ export default function HomeScreen() {
     toggle.mutate({ medicineId: medId, logDate: dateStr, slot, taken: !currently });
   };
 
+  const onRefresh = useCallback(() => {
+    patientQ.refetch();
+    medsQ.refetch();
+    logQ.refetch();
+  }, [patientQ, medsQ, logQ]);
+
   if (patientQ.isLoading || medsQ.isLoading) {
     return (
       <View style={{ flex: 1, backgroundColor: tokens.bg, alignItems: 'center', justifyContent: 'center' }}>
@@ -84,11 +90,6 @@ export default function HomeScreen() {
   );
 
   const refreshing = patientQ.isFetching || medsQ.isFetching || logQ.isFetching;
-  const onRefresh = useCallback(() => {
-    patientQ.refetch();
-    medsQ.refetch();
-    logQ.refetch();
-  }, [patientQ, medsQ, logQ]);
 
   return (
     <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1, backgroundColor: tokens.bg }}>
