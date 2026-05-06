@@ -24,6 +24,7 @@ import {
   scanLabReport,
   scanPrescription,
   setMedicationLog,
+  updateMedicine,
   upsertFlareEntry,
   upsertPatient,
   type Appointment,
@@ -37,6 +38,7 @@ import {
   type MedicationLogUpsert,
   type Medicine,
   type MedicineCreate,
+  type MedicineUpdate,
   type Patient,
   type PatientCreate,
   type PatientUpdate,
@@ -134,6 +136,16 @@ export const useDeleteMedicine = () => {
   const qc = useQueryClient();
   return useMutation<void, Error, string>({
     mutationFn: (id: string) => deleteMedicine(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.medicines });
+    },
+  });
+};
+
+export const useUpdateMedicine = () => {
+  const qc = useQueryClient();
+  return useMutation<Medicine, Error, { id: string; data: MedicineUpdate }>({
+    mutationFn: ({ id, data }) => updateMedicine(id, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.medicines });
     },
