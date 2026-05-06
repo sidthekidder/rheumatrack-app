@@ -176,6 +176,7 @@ export default function MedicinesScreen() {
                   setExpandedId((prev) => (prev === med.id ? null : med.id))
                 }
                 onDelete={() => setConfirmDelId(med.id)}
+                onEdit={() => router.push(`/medicines/edit/${med.id}` as Href)}
               />
             ))
           )}

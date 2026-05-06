@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { ChevronDown, Info, Trash2 } from 'lucide-react-native';
+import { ChevronDown, Info, Pencil, Trash2 } from 'lucide-react-native';
 import { DOW_LONG, DOW_SHORT } from '@/constants/dow';
 import { SLOTS, TS_DATA } from '@/constants/slots';
 import type { Medicine } from '@/lib/api';
@@ -11,6 +11,7 @@ interface Props {
   isExpanded: boolean;
   onToggle: () => void;
   onDelete: () => void;
+  onEdit: () => void;
 }
 
 function slotsTxt(med: Medicine): string {
@@ -90,6 +91,7 @@ export default function MedicineRow({
   isExpanded,
   onToggle,
   onDelete,
+  onEdit,
 }: Props) {
   const { tokens } = useTheme();
   const barColor = med.color ?? tokens.text2;
@@ -230,33 +232,49 @@ export default function MedicineRow({
             </View>
           ) : null}
 
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Remove ${med.drugName}`}
-            onPress={onDelete}
-            style={{
-              marginTop: 9,
-              backgroundColor: '#FEE2E2',
-              borderRadius: 9,
-              paddingVertical: 8,
-              paddingHorizontal: 13,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6,
-            }}
-          >
-            <Trash2 size={14} color="#DC2626" />
-            <Text
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 9 }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Edit ${med.drugName}`}
+              onPress={onEdit}
               style={{
-                color: '#DC2626',
-                fontWeight: '700',
-                fontSize: 14,
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                paddingVertical: 10,
+                borderRadius: 9,
+                backgroundColor: '#3B82F6',
               }}
             >
-              Remove Medicine
-            </Text>
-          </Pressable>
+              <Pencil color="white" size={14} />
+              <Text style={{ color: 'white', fontWeight: '700', fontSize: 14 }}>
+                Edit
+              </Text>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Remove ${med.drugName}`}
+              onPress={onDelete}
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                paddingVertical: 10,
+                borderRadius: 9,
+                backgroundColor: '#FEE2E2',
+              }}
+            >
+              <Trash2 size={14} color="#DC2626" />
+              <Text style={{ color: '#DC2626', fontWeight: '700', fontSize: 14 }}>
+                Remove
+              </Text>
+            </Pressable>
+          </View>
         </View>
       ) : null}
     </View>
