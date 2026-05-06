@@ -311,7 +311,7 @@ export const bulkCreateMedicines = (
     body: JSON.stringify(body),
   });
 
-export const patchMedicine = (
+export const updateMedicine = (
   id: string,
   body: MedicineUpdate
 ): Promise<Medicine> =>
@@ -322,16 +322,6 @@ export const patchMedicine = (
 
 export const deleteMedicine = (id: string): Promise<void> =>
   apiFetch<void>(`/medicines/${id}`, { method: 'DELETE' });
-
-export async function updateMedicine(
-  id: string,
-  body: MedicineUpdate
-): Promise<Medicine> {
-  return apiFetch<Medicine>(`/medicines/${id}`, {
-    method: 'PATCH',
-    body: JSON.stringify(body),
-  });
-}
 
 export const getMedicationLog = (
   from: string,
