@@ -225,7 +225,7 @@ export default function DoctorDetails() {
             })}
           </View>
 
-          <Lbl>{t('whatsapp_number')} *</Lbl>
+          <Lbl>{`${t('whatsapp_number')} *`}</Lbl>
           <View
             style={{
               flexDirection: 'row',
