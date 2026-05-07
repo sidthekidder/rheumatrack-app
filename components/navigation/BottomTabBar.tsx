@@ -8,6 +8,7 @@ import {
 } from 'lucide-react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 import AddButton from './AddButton';
 
 const TAB_ORDER = ['index', 'records', 'scan', 'wellness', 'me'] as const;
@@ -19,11 +20,11 @@ const ICONS: Record<string, React.ComponentType<{ color: string; size: number }>
   me: User,
 };
 
-const LABELS: Record<string, string> = {
-  index: 'Home',
-  records: 'Records',
-  wellness: 'Wellness',
-  me: 'Me',
+const LABEL_KEYS: Record<string, 'nav_home' | 'nav_records' | 'nav_wellness' | 'nav_me'> = {
+  index: 'nav_home',
+  records: 'nav_records',
+  wellness: 'nav_wellness',
+  me: 'nav_me',
 };
 
 const ACTIVE_PILL = '#E6F7F5';
@@ -31,6 +32,7 @@ const ACTIVE_TINT = '#0D9488';
 
 export default function BottomTabBar({ state, navigation }: BottomTabBarProps) {
   const { tokens } = useTheme();
+  const t = useT();
   const insets = useSafeAreaInsets();
 
   // Order routes per TAB_ORDER (defensive against expo-router re-ordering)
@@ -74,7 +76,8 @@ export default function BottomTabBar({ state, navigation }: BottomTabBarProps) {
         }
 
         const Icon = ICONS[route.name];
-        const label = LABELS[route.name];
+        const labelKey = LABEL_KEYS[route.name];
+        const label = labelKey ? t(labelKey) : route.name;
         const tintColor = isFocused ? ACTIVE_TINT : tokens.text2;
 
         return (

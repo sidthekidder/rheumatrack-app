@@ -1,6 +1,7 @@
 import { Pressable, View, Text, type GestureResponderEvent } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Plus } from 'lucide-react-native';
+import { useT } from '@/lib/i18n/useT';
 
 interface AddButtonProps {
   onPress: (e: GestureResponderEvent) => void;
@@ -8,10 +9,11 @@ interface AddButtonProps {
 }
 
 export default function AddButton({ onPress, active = false }: AddButtonProps) {
+  const t = useT();
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel="Add — open scan or manual add"
+      accessibilityLabel={t('nav_add')}
       onPress={onPress}
       style={{ alignItems: 'center', justifyContent: 'center' }}
     >
@@ -40,7 +42,7 @@ export default function AddButton({ onPress, active = false }: AddButtonProps) {
         </LinearGradient>
       </View>
       <Text style={{ fontSize: 9, fontWeight: '700', color: '#0D9488', marginTop: 2 }}>
-        +Add
+        {`+${t('nav_add')}`}
       </Text>
     </Pressable>
   );
