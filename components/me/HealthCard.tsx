@@ -1,5 +1,5 @@
-import { Platform, Pressable, ScrollView, Share, Text, View } from 'react-native';
-import { Share2 } from 'lucide-react-native';
+import { ScrollView, Text, View } from 'react-native';
+import HealthCardShareButton from './HealthCardShareButton';
 import { useMedicines, useMedicationLog, usePatient, useLabReports } from '@/lib/queries';
 import type { Medicine } from '@/lib/api';
 import { LAB_TESTS, flagVal } from '@/constants/labs';
@@ -146,45 +146,6 @@ export default function HealthCard() {
     return m.scheduleType;
   };
 
-  const onShare = async () => {
-    if (!patient) return;
-    const text = formatHealthCardForShare({
-      patient: {
-        name: patient.name,
-        patientId: patient.patientId ?? null,
-        age: patient.age ?? null,
-        city: patient.city ?? null,
-        country: patient.country ?? null,
-        diagnosis: patient.diagnosis ?? null,
-      },
-      compliance: { taken: totalTaken, total: totalDue, pct: compliancePct },
-      medicines: medicines.map((m) => ({
-        drugName: m.drugName,
-        dose: m.dose,
-        scheduleSummary: scheduleSummary(m),
-      })),
-      abnormalLabs,
-      generatedAt: todayStr,
-    });
-
-    if (Platform.OS === 'web' && typeof navigator !== 'undefined') {
-      if (typeof navigator.share === 'function') {
-        try {
-          await navigator.share({ text });
-        } catch {
-          /* user cancelled */
-        }
-        return;
-      }
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(text);
-        alert('Health card copied to clipboard');
-        return;
-      }
-    }
-    await Share.share({ message: text });
-  };
-
   if (patientQ.isLoading || medsQ.isLoading) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.bg }}>
@@ -208,13 +169,29 @@ export default function HealthCard() {
             <Text style={{ color: tokens.text, fontSize: 20, fontWeight: '800' }}>{patient.name}</Text>
             {patient.patientId ? <Text style={{ color: tokens.text2, fontSize: 13 }}>ID: {patient.patientId}</Text> : null}
           </View>
-          <Pressable
-            onPress={onShare}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, backgroundColor: '#0D9488' }}
-          >
-            <Share2 color="white" size={16} />
-            <Text style={{ color: 'white', fontWeight: '700' }}>Share</Text>
-          </Pressable>
+          <HealthCardShareButton
+            shareText={formatHealthCardForShare({
+              patient: {
+                name: patient.name,
+                patientId: patient.patientId ?? null,
+                age: patient.age ?? null,
+                city: patient.city ?? null,
+                country: patient.country ?? null,
+                diagnosis: patient.diagnosis ?? null,
+              },
+              compliance: { taken: totalTaken, total: totalDue, pct: compliancePct },
+              medicines: medicines.map((m) => ({
+                drugName: m.drugName,
+                dose: m.dose,
+                scheduleSummary: scheduleSummary(m),
+              })),
+              abnormalLabs,
+              generatedAt: todayStr,
+              forWhatsApp: true,
+              doctorName: patient.doctorName ?? null,
+            })}
+            doctorPhone={patient.doctorPhone ?? null}
+          />
         </View>
         {patient.age || patient.city ? (
           <Text style={{ color: tokens.text2, marginTop: 6, fontSize: 13 }}>
