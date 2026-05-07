@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { CheckCircle, Circle, X } from 'lucide-react-native';
 import { TS_DATA } from '@/constants/slots';
+import { useT } from '@/lib/i18n/useT';
 import { formatDose, fromStr, getMedsForDate, type Medicine } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
 
@@ -19,6 +20,7 @@ export default function DayDetailsSheet({
   onClose,
 }: DayDetailsSheetProps) {
   const { tokens } = useTheme();
+  const t = useT();
 
   const dayMeds = useMemo(
     () => (dateStr ? getMedsForDate(meds, dateStr) : []),
@@ -107,7 +109,7 @@ export default function DayDetailsSheet({
                   marginTop: 2,
                 }}
               >
-                Day Details
+                {t('day_details')}
               </Text>
             </View>
             <Pressable
@@ -142,7 +144,7 @@ export default function DayDetailsSheet({
                     textAlign: 'center',
                   }}
                 >
-                  No medicines scheduled this day
+                  {t('no_meds_scheduled')}
                 </Text>
               </View>
             ) : (

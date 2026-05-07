@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Activity } from 'lucide-react-native';
+import { useT } from '@/lib/i18n/useT';
 import { useTheme } from '@/lib/themeStore';
 import { greet } from '@/lib/schedule';
 
@@ -14,6 +15,7 @@ interface Props {
 
 export default function ProgressHeader({ patientName, diagnosis, totalDue, totalTaken, isLoading }: Props) {
   const { tokens } = useTheme();
+  const t = useT();
   const pct = totalDue > 0 ? Math.round((totalTaken / totalDue) * 100) : 0;
   const firstName = patientName?.split(' ')[0];
 
@@ -43,17 +45,17 @@ export default function ProgressHeader({ patientName, diagnosis, totalDue, total
           }}
         >
           <Text style={{ fontSize: 22, fontWeight: '900', color: 'white' }}>{isLoading ? '—' : `${pct}%`}</Text>
-          <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)' }}>Done</Text>
+          <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)' }}>{t('done')}</Text>
         </View>
       </View>
 
       <View style={{ marginTop: 8 }}>
         <Text style={{ fontSize: 13, fontWeight: '700', marginBottom: 5, color: 'rgba(255,255,255,0.9)' }}>
           {isLoading
-            ? 'loading…'
+            ? t('loading')
             : pct === 100 && totalDue > 0
-              ? '🎉 All medicines taken today!'
-              : `${totalTaken} of ${totalDue} doses taken`}
+              ? t('all_meds_taken_today')
+              : t('doses_taken_of').replace('{taken}', String(totalTaken)).replace('{due}', String(totalDue))}
         </Text>
         <View style={{ backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 50, height: 8, overflow: 'hidden' }}>
           <View style={{ width: `${pct}%`, backgroundColor: 'white', height: '100%', borderRadius: 50 }} />

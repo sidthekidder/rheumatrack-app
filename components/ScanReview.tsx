@@ -23,6 +23,7 @@ import type {
   ParsedPrescription,
   ScheduleType,
 } from '@/lib/api';
+import { useT } from '@/lib/i18n/useT';
 import { formatDose, formatDoseShort } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
 
@@ -48,11 +49,11 @@ function getFoodTimingId(m: ParsedMedicine): FoodTimingId | null {
   return idx >= 0 ? (FOOD_TID[idx] as FoodTimingId) : null;
 }
 
-function foodLabelFor(m: ParsedMedicine): string {
+function foodLabelFor(m: ParsedMedicine, anyTimeLabel: string): string {
   const id = getFoodTimingId(m);
-  if (!id) return 'Any Time';
+  if (!id) return anyTimeLabel;
   const i = FOOD_TID.indexOf(id);
-  return i >= 0 ? FOOD_LABELS[i] : 'Any Time';
+  return i >= 0 ? FOOD_LABELS[i] : anyTimeLabel;
 }
 
 function slotsTxtFor(schedule: DoseSchedule | undefined, short: boolean): string {
@@ -67,26 +68,35 @@ function slotsTxtFor(schedule: DoseSchedule | undefined, short: boolean): string
     .join(' + ');
 }
 
-function describeSchedule(m: ParsedMedicine): string {
+function describeSchedule(
+  m: ParsedMedicine,
+  labels: {
+    every: string;
+    alternateDays: string;
+    taperingSchedule: string;
+    dailyExcept: string;
+    daily: string;
+  },
+): string {
   const slotsTxt = slotsTxtFor(m.doseSchedule, true);
   const type = (m.scheduleType ?? 'daily') as ScheduleType;
   if (type === 'weekly' && typeof m.weekDay === 'number') {
-    return `Every ${DOW_LONG[m.weekDay] ?? ''} • ${slotsTxt}`;
+    return `${labels.every} ${DOW_LONG[m.weekDay] ?? ''} • ${slotsTxt}`;
   }
   if (type === 'alternate') {
-    return `Alternate days • ${slotsTxt}`;
+    return `${labels.alternateDays} • ${slotsTxt}`;
   }
   if (type === 'tapering') {
-    return `Tapering schedule (${m.taperingPhases?.length ?? 0} phases)`;
+    return `${labels.taperingSchedule} (${m.taperingPhases?.length ?? 0})`;
   }
   if (m.excludeDays && m.excludeDays.length > 0) {
     const days = m.excludeDays
       .map((d) => DOW_SHORT[d] ?? '')
       .filter(Boolean)
       .join(', ');
-    return `Daily except ${days} • ${slotsTxt}`;
+    return `${labels.dailyExcept} ${days} • ${slotsTxt}`;
   }
-  return `Daily • ${slotsTxt}`;
+  return `${labels.daily} • ${slotsTxt}`;
 }
 
 export default function ScanReview({
@@ -100,11 +110,20 @@ export default function ScanReview({
   isSaving,
 }: ScanReviewProps) {
   const { tokens } = useTheme();
+  const t = useT();
   const meds = getMeds(extracted);
   const total = meds.length;
   const allSelected = total > 0 && selected.size === total;
 
   const saveDisabled = isSaving || selected.size === 0;
+
+  const scheduleLabels = {
+    every: t('scan_schedule_every'),
+    alternateDays: t('scan_schedule_alternate'),
+    taperingSchedule: t('scan_schedule_tapering'),
+    dailyExcept: t('scan_schedule_daily_except'),
+    daily: t('scan_schedule_daily'),
+  };
 
   return (
     <View>
@@ -128,7 +147,7 @@ export default function ScanReview({
       >
         <ArrowLeft size={15} color={tokens.text} />
         <Text style={{ fontSize: 13, fontWeight: '700', color: tokens.text }}>
-          Back
+          {t('back')}
         </Text>
       </Pressable>
 
@@ -148,11 +167,11 @@ export default function ScanReview({
         >
           <Sparkles size={18} color="white" />
           <Text style={{ fontWeight: '800', fontSize: 16, color: 'white' }}>
-            Extracted from Prescription
+            {t('scan_extracted')}
           </Text>
         </View>
         <Text style={{ fontSize: 13, color: 'white', opacity: 0.9 }}>
-          Review the details — uncheck any you don't want to add
+          {t('scan_review_hint')}
         </Text>
       </LinearGradient>
 
@@ -180,7 +199,7 @@ export default function ScanReview({
               <Text
                 style={{ fontSize: 12, fontWeight: '700', color: tokens.text2 }}
               >
-                Diagnosis:
+                {t('hc_diagnosis_label')}
               </Text>
               <Text
                 style={{ fontSize: 13, fontWeight: '800', color: tokens.text }}
@@ -230,7 +249,7 @@ export default function ScanReview({
         }}
       >
         <Text style={{ fontWeight: '800', fontSize: 14, color: tokens.text }}>
-          {selected.size} / {total} selected
+          {t('scan_selected_count').replace('{n}', String(selected.size)).replace('{total}', String(total))}
         </Text>
         <Pressable
           accessibilityRole="button"
@@ -243,14 +262,14 @@ export default function ScanReview({
           }}
         >
           <Text style={{ fontWeight: '700', fontSize: 13, color: '#0D9488' }}>
-            {allSelected ? 'Unselect All' : 'Select All'}
+            {allSelected ? t('unselect_all') : t('select_all')}
           </Text>
         </Pressable>
       </View>
 
       {meds.map((m, i) => {
         const sel = selected.has(i);
-        const foodTxt = foodLabelFor(m);
+        const foodTxt = foodLabelFor(m, t('any_time'));
         return (
           <Pressable
             key={`${m.drugName}-${i}`}
@@ -321,7 +340,7 @@ export default function ScanReview({
                   <Text
                     style={{ fontSize: 13, color: '#0D9488', fontWeight: '700' }}
                   >
-                    {describeSchedule(m)}
+                    {describeSchedule(m, scheduleLabels)}
                   </Text>
                 </View>
                 <Text
@@ -343,7 +362,7 @@ export default function ScanReview({
                       marginTop: 2,
                     }}
                   >
-                    ⏱️ {m.durationDays} days
+                    ⏱️ {m.durationDays} {t('days')}
                   </Text>
                 ) : null}
                 {m.scheduleType === 'tapering' && m.taperingPhases ? (
@@ -366,7 +385,7 @@ export default function ScanReview({
                         marginBottom: 3,
                       }}
                     >
-                      TAPERING PHASES
+                      {t('tapering_phases')}
                     </Text>
                     {m.taperingPhases.map((p, j) => {
                       const phases = m.taperingPhases ?? [];
@@ -396,7 +415,7 @@ export default function ScanReview({
                             marginBottom: 1,
                           }}
                         >
-                          Day {startDay}–{endDay}: {phaseSlots}
+                          {t('scan_day_range').replace('{start}', String(startDay)).replace('{end}', String(endDay))}: {phaseSlots}
                         </Text>
                       );
                     })}
@@ -443,7 +462,7 @@ export default function ScanReview({
             <Text
               style={{ color: 'white', fontWeight: '900', fontSize: 18 }}
             >
-              ✅ Save All Medicines ({selected.size})
+              {t('save_all_medicines').replace('{n}', String(selected.size))}
             </Text>
           </View>
         ) : (
@@ -466,14 +485,14 @@ export default function ScanReview({
                 <Text
                   style={{ color: 'white', fontWeight: '900', fontSize: 18 }}
                 >
-                  Adding medicines...
+                  {t('adding_medicines')}
                 </Text>
               </>
             ) : (
               <Text
                 style={{ color: 'white', fontWeight: '900', fontSize: 18 }}
               >
-                ✅ Save All Medicines ({selected.size})
+                {t('save_all_medicines').replace('{n}', String(selected.size))}
               </Text>
             )}
           </LinearGradient>

@@ -1,6 +1,7 @@
 import { Linking, Pressable, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MessageCircle, Stethoscope } from 'lucide-react-native';
+import { useT } from '@/lib/i18n/useT';
 import { useTheme } from '@/lib/themeStore';
 import { waPhone } from '@/lib/schedule';
 
@@ -34,6 +35,7 @@ export default function DoctorCard({
   diagnosis,
 }: Props) {
   const { tokens } = useTheme();
+  const t = useT();
 
   const open = () => {
     const text = encodeURIComponent(
@@ -76,7 +78,7 @@ export default function DoctorCard({
             }}
           >
             <MessageCircle size={15} color="white" />
-            <Text style={{ color: 'white', fontWeight: '700', fontSize: 13 }}>WhatsApp</Text>
+            <Text style={{ color: 'white', fontWeight: '700', fontSize: 13 }}>{t('me_whatsapp')}</Text>
           </View>
         </View>
       </LinearGradient>

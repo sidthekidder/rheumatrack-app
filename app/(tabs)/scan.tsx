@@ -26,6 +26,7 @@ import type {
   ScanResult,
   UploadFile,
 } from '@/lib/api';
+import { useT } from '@/lib/i18n/useT';
 import {
   useBulkCreateMedicines,
   useMedicines,
@@ -40,13 +41,6 @@ interface SelectedFile {
   mimeType: string;
   name: string;
 }
-
-const TIPS: readonly string[] = [
-  'Take photo in good lighting',
-  'Keep prescription flat and fully visible',
-  'All medicine names, doses & frequencies clearly readable',
-  'Works best with printed prescriptions',
-];
 
 function getMeds(parsed: ParsedPrescription | null): ParsedMedicine[] {
   if (!parsed) return [];
@@ -75,6 +69,14 @@ function fileNameFromUri(uri: string, fallback: string): string {
 export default function ScanScreen() {
   const router = useRouter();
   const { tokens } = useTheme();
+  const t = useT();
+
+  const TIPS: readonly string[] = [
+    t('scan_tip_1'),
+    t('scan_tip_2'),
+    t('scan_tip_3'),
+    t('scan_tip_4'),
+  ];
 
   const [selectedFile, setSelectedFile] = useState<SelectedFile | null>(null);
   const [extracted, setExtracted] = useState<ParsedPrescription | null>(null);
@@ -130,8 +132,8 @@ export default function ScanScreen() {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) {
       Alert.alert(
-        'Camera permission needed',
-        'Please allow camera access to take a photo of your prescription.'
+        t('scan_camera_permission'),
+        t('scan_camera_permission_hint')
       );
       return;
     }
@@ -157,8 +159,8 @@ export default function ScanScreen() {
       const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!perm.granted) {
         Alert.alert(
-          'Photo library permission needed',
-          'Please allow photo library access to choose a prescription image.'
+          t('scan_photo_library_permission'),
+          t('scan_photo_library_permission_hint')
         );
         return;
       }
@@ -271,7 +273,7 @@ export default function ScanScreen() {
     } catch (e) {
       const msg =
         e instanceof Error ? e.message : 'Failed to save medicines.';
-      Alert.alert('Save failed', msg);
+      Alert.alert(t('save_failed'), msg);
     }
   }, [
     extracted,
@@ -312,11 +314,11 @@ export default function ScanScreen() {
           >
             <Sparkles size={22} color="white" />
             <Text style={{ fontSize: 22, fontWeight: '900', color: 'white' }}>
-              Scan Prescription
+              {t('scan_prescription')}
             </Text>
           </View>
           <Text style={{ fontSize: 13, color: 'white', opacity: 0.85 }}>
-            AI reads your prescription & sets up everything
+            {t('scan_header_sub')}
           </Text>
         </LinearGradient>
 
@@ -380,7 +382,7 @@ export default function ScanScreen() {
                           marginTop: 4,
                         }}
                       >
-                        PDF selected
+                        {t('pdf_selected')}
                       </Text>
                     </View>
                   )
@@ -394,7 +396,7 @@ export default function ScanScreen() {
                         color: tokens.text,
                       }}
                     >
-                      Upload Prescription Photo
+                      {t('upload_prescription_photo')}
                     </Text>
                     <Text
                       style={{
@@ -404,8 +406,7 @@ export default function ScanScreen() {
                         textAlign: 'center',
                       }}
                     >
-                      Tap a button below to take photo, choose from gallery, or
-                      pick a PDF
+                      {t('scan_upload_hint')}
                     </Text>
                   </>
                 )}
@@ -420,21 +421,21 @@ export default function ScanScreen() {
                 }}
               >
                 <PickerButton
-                  label="Take Photo"
+                  label={t('take_photo')}
                   emoji="📷"
                   onPress={onTakePhoto}
                   disabled={isScanning}
                   tokens={tokens}
                 />
                 <PickerButton
-                  label="Gallery"
+                  label={t('gallery')}
                   emoji="🖼️"
                   onPress={onChoosePhoto}
                   disabled={isScanning}
                   tokens={tokens}
                 />
                 <PickerButton
-                  label="Choose PDF"
+                  label={t('choose_pdf')}
                   emoji="📄"
                   onPress={onChoosePdf}
                   disabled={isScanning}
@@ -469,7 +470,7 @@ export default function ScanScreen() {
                         fontSize: 14,
                       }}
                     >
-                      🔄 Change Image
+                      {t('change_image')}
                     </Text>
                   </Pressable>
                   <Pressable
@@ -499,7 +500,7 @@ export default function ScanScreen() {
                           fontSize: 15,
                         }}
                       >
-                        📋 Read Prescription
+                        📋 {t('read_prescription')}
                       </Text>
                     </LinearGradient>
                   </Pressable>
@@ -532,7 +533,7 @@ export default function ScanScreen() {
                       textAlign: 'center',
                     }}
                   >
-                    AI is reading your prescription...
+                    {t('scan_ai_reading')}
                   </Text>
                   <Text
                     style={{
@@ -542,7 +543,7 @@ export default function ScanScreen() {
                       textAlign: 'center',
                     }}
                   >
-                    Extracting medications, schedules, and diagnosis
+                    {t('scan_extracting')}
                   </Text>
                 </View>
               ) : null}
@@ -568,7 +569,7 @@ export default function ScanScreen() {
                   <Text
                     style={{ fontWeight: '800', color: '#991B1B', fontSize: 16 }}
                   >
-                    Could not read prescription
+                    {t('could_not_read_prescription')}
                   </Text>
                   <Text
                     style={{
@@ -601,7 +602,7 @@ export default function ScanScreen() {
                         fontSize: 14,
                       }}
                     >
-                      Try Again
+                      {t('try_again')}
                     </Text>
                   </Pressable>
                 </View>
@@ -625,7 +626,7 @@ export default function ScanScreen() {
                     marginBottom: 7,
                   }}
                 >
-                  💡 Tips for best results
+                  {t('scan_tips_heading')}
                 </Text>
                 {TIPS.map((tip) => (
                   <View

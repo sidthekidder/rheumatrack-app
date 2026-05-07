@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { CheckCircle, Circle } from 'lucide-react-native';
 import type { SlotMeta } from '@/constants/slots';
+import { useT } from '@/lib/i18n/useT';
 import { useTheme } from '@/lib/themeStore';
 import { formatDose, type MedWithDoses } from '@/lib/schedule';
 
@@ -13,8 +14,9 @@ interface Props {
 
 export default function MedRow({ med, slot, taken, onToggle }: Props) {
   const { tokens } = useTheme();
+  const t = useT();
   const qty = med.dosesToday[slot.id] ?? 0;
-  const foodLabel = med.foodTimingLabel || 'Any Time';
+  const foodLabel = med.foodTimingLabel || t('any_time');
 
   return (
     <View
@@ -87,12 +89,12 @@ export default function MedRow({ med, slot, taken, onToggle }: Props) {
         {taken ? (
           <>
             <CheckCircle size={17} color="white" />
-            <Text style={{ color: 'white', fontWeight: '800', fontSize: 13 }}>Taken</Text>
+            <Text style={{ color: 'white', fontWeight: '800', fontSize: 13 }}>{t('taken')}</Text>
           </>
         ) : (
           <>
             <Circle size={17} color={tokens.text2} />
-            <Text style={{ color: tokens.text2, fontWeight: '700', fontSize: 13 }}>Take</Text>
+            <Text style={{ color: tokens.text2, fontWeight: '700', fontSize: 13 }}>{t('take')}</Text>
           </>
         )}
       </Pressable>

@@ -1,5 +1,6 @@
 import { Pressable, Text, TextInput, View } from 'react-native';
 import type { DoseSchedule, TaperingPhase } from '@/lib/schedule';
+import { useT } from '@/lib/i18n/useT';
 import { useTheme } from '@/lib/themeStore';
 import DoseControl from './DoseControl';
 
@@ -17,6 +18,7 @@ const EMPTY_DOSES: DoseSchedule = {
 
 export default function TaperingBuilder({ phases, setPhases }: Props) {
   const { tokens } = useTheme();
+  const t = useT();
 
   const updatePhase = (i: number, patch: Partial<TaperingPhase>) => {
     const next = phases.slice();
@@ -65,7 +67,7 @@ export default function TaperingBuilder({ phases, setPhases }: Props) {
             <Text
               style={{ fontWeight: '800', fontSize: 14, color: tokens.text }}
             >
-              Phase {i + 1}
+              {t('phase')} {i + 1}
             </Text>
             {phases.length > 1 ? (
               <Pressable
@@ -82,7 +84,7 @@ export default function TaperingBuilder({ phases, setPhases }: Props) {
                 <Text
                   style={{ fontWeight: '700', fontSize: 12, color: '#DC2626' }}
                 >
-                  Remove
+                  {t('remove')}
                 </Text>
               </Pressable>
             ) : null}
@@ -98,7 +100,7 @@ export default function TaperingBuilder({ phases, setPhases }: Props) {
             <Text
               style={{ fontSize: 13, fontWeight: '700', color: tokens.text2 }}
             >
-              Duration:
+              {t('duration')}:
             </Text>
             <TextInput
               value={String(phase.days)}
@@ -121,7 +123,7 @@ export default function TaperingBuilder({ phases, setPhases }: Props) {
             <Text
               style={{ fontSize: 13, fontWeight: '700', color: tokens.text2 }}
             >
-              days
+              {t('days')}
             </Text>
           </View>
           <DoseControl
@@ -146,7 +148,7 @@ export default function TaperingBuilder({ phases, setPhases }: Props) {
         }}
       >
         <Text style={{ color: '#0D9488', fontWeight: '800', fontSize: 14 }}>
-          + Add Phase
+          {t('add_phase')}
         </Text>
       </Pressable>
     </View>
