@@ -31,11 +31,19 @@ export interface ShareInput {
   medicines: Array<{ drugName: string; dose: string; scheduleSummary: string }>;
   abnormalLabs: AbnormalLabFlag[];
   generatedAt: string;
+  forWhatsApp?: boolean;
+  doctorName?: string | null;
 }
 
 export function formatHealthCardForShare(input: ShareInput): string {
-  const { patient, compliance, medicines, abnormalLabs, generatedAt } = input;
+  const { patient, compliance, medicines, abnormalLabs, generatedAt, forWhatsApp, doctorName } = input;
   const lines: string[] = [];
+
+  if (forWhatsApp && doctorName) {
+    lines.push(`Hello ${doctorName},`);
+    lines.push('');
+  }
+
   lines.push('RheumaTrack Health Card');
   lines.push(`Patient: ${patient.name}${patient.patientId ? ` (ID: ${patient.patientId})` : ''}`);
   if (patient.age) {
@@ -56,7 +64,9 @@ export function formatHealthCardForShare(input: ShareInput): string {
     for (const l of abnormalLabs) lines.push(`- ${l.label}: ${l.value} (normal ${l.normalRange})`);
     lines.push('');
   }
-  lines.push(`Generated ${generatedAt} via RheumaTrack`);
+  if (!forWhatsApp) {
+    lines.push(`Generated ${generatedAt} via RheumaTrack`);
+  }
   return lines.join('\n');
 }
 

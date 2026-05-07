@@ -82,4 +82,32 @@ describe('formatHealthCardForShare', () => {
     expect(text).not.toContain('Age:');
     expect(text).not.toContain('Diagnosis:');
   });
+
+  it('forWhatsApp: true → output starts with greeting when doctorName present', () => {
+    const text = formatHealthCardForShare({
+      ...baseInput,
+      forWhatsApp: true,
+      doctorName: 'Dr. Tanmay',
+    });
+    expect(text.split('\n')[0]).toBe('Hello Dr. Tanmay,');
+  });
+
+  it('forWhatsApp: true → output omits the "Generated ... via RheumaTrack" footer', () => {
+    const text = formatHealthCardForShare({
+      ...baseInput,
+      forWhatsApp: true,
+      doctorName: 'Dr. Tanmay',
+    });
+    expect(text).not.toContain('Generated 2026-05-06 via RheumaTrack');
+  });
+
+  it('forWhatsApp: true with missing doctorName → omits greeting line', () => {
+    const text = formatHealthCardForShare({
+      ...baseInput,
+      forWhatsApp: true,
+      doctorName: null,
+    });
+    expect(text).not.toContain('Hello');
+    expect(text.split('\n')[0]).toBe('RheumaTrack Health Card');
+  });
 });
