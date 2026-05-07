@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, Linking, Pressable, Text, TextInput, View } from 'react-native';
-import { Globe, Link, MessageCircle, Pencil, Phone, Play, Stethoscope } from 'lucide-react-native';
+import { MessageCircle, Pencil, Phone, Stethoscope } from 'lucide-react-native';
+import DoctorSocialLinks from '@/components/DoctorSocialLinks';
 import { usePatchPatient, usePatient } from '@/lib/queries';
 import { waPhone } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
@@ -102,24 +103,12 @@ export default function DoctorSection() {
         </View>
       ) : null}
 
-      {patient.doctorWebsiteUrl ? (
-        <Pressable onPress={() => Linking.openURL(patient.doctorWebsiteUrl!)} style={{ ...socialBtn, backgroundColor: '#3B82F6', marginTop: 8 }}>
-          <Globe color="white" size={16} />
-          <Text style={socialText}>Website</Text>
-        </Pressable>
-      ) : null}
-      {patient.doctorInstagramUrl ? (
-        <Pressable onPress={() => Linking.openURL(patient.doctorInstagramUrl!)} style={{ ...socialBtn, backgroundColor: '#E1306C', marginTop: 8 }}>
-          <Link color="white" size={16} />
-          <Text style={socialText}>Instagram</Text>
-        </Pressable>
-      ) : null}
-      {patient.doctorYoutubeUrl ? (
-        <Pressable onPress={() => Linking.openURL(patient.doctorYoutubeUrl!)} style={{ ...socialBtn, backgroundColor: '#DC2626', marginTop: 8 }}>
-          <Play color="white" size={16} />
-          <Text style={socialText}>YouTube</Text>
-        </Pressable>
-      ) : null}
+      <DoctorSocialLinks
+        websiteUrl={patient.doctorWebsiteUrl}
+        instagramUrl={patient.doctorInstagramUrl}
+        youtubeUrl={patient.doctorYoutubeUrl}
+        variant="colored"
+      />
     </Section>
   );
 }
@@ -160,6 +149,3 @@ const inputStyle = (tokens: ReturnType<typeof useTheme>['tokens']) => ({
   borderWidth: 1,
   borderColor: tokens.border,
 });
-
-const socialBtn = { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'center' as const, gap: 6, padding: 10, borderRadius: 8 };
-const socialText = { color: 'white' as const, fontWeight: '700' as const, fontSize: 13 };
