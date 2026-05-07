@@ -2,12 +2,11 @@ import { Pressable, Text, View } from 'react-native';
 import { useLanguageStore, type Language } from '@/lib/languageStore';
 import { usePatchPatient } from '@/lib/queries';
 import { useTheme } from '@/lib/themeStore';
-
-// Phase 2: this toggle persists the user's choice to local storage AND server.
-// Actual UI string translation (STRINGS table + t() helper) is wired in Phase 3.
+import { useT } from '@/lib/i18n/useT';
 
 export default function LanguageToggle() {
   const { tokens } = useTheme();
+  const t = useT();
   const language = useLanguageStore((s) => s.language);
   const setLanguage = useLanguageStore((s) => s.setLanguage);
   const patchMutation = usePatchPatient();
@@ -19,7 +18,7 @@ export default function LanguageToggle() {
 
   return (
     <View style={{ backgroundColor: tokens.card, borderRadius: 12, padding: 14, marginBottom: 12, gap: 10 }}>
-      <Text style={{ color: tokens.text, fontWeight: '800', fontSize: 14 }}>Language</Text>
+      <Text style={{ color: tokens.text, fontWeight: '800', fontSize: 14 }}>{t('language')}</Text>
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <Btn active={language === 'en'} onPress={() => onPick('en')} label="🇬🇧 English" />
         <Btn active={language === 'hi'} onPress={() => onPick('hi')} label="🇮🇳 हिन्दी" />
