@@ -21,6 +21,7 @@ import {
 import type { LabReport, LabResultEntry, UploadFile } from '@/lib/api';
 import { today } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
+import LabRow from '@/components/LabRow';
 
 type Screen =
   | { kind: 'dash' }
@@ -52,6 +53,22 @@ export default function LabsView() {
       .forEach((e) => e.results.forEach((r) => {
         out[r.testId] = { v: r.value, date: e.reportDate };
       }));
+    return out;
+  }, [reports]);
+
+  const histories = useMemo(() => {
+    const out: Record<string, Array<{ date: string; value: number }>> = {};
+    for (const r of reports) {
+      for (const entry of r.results ?? []) {
+        const num = parseFloat(entry.value);
+        if (Number.isNaN(num)) continue;
+        if (!out[entry.testId]) out[entry.testId] = [];
+        out[entry.testId].push({ date: r.reportDate, value: num });
+      }
+    }
+    for (const k of Object.keys(out)) {
+      out[k].sort((a, b) => a.date.localeCompare(b.date));
+    }
     return out;
   }, [reports]);
 
@@ -166,38 +183,14 @@ export default function LabsView() {
                 fontWeight: '800', fontSize: 11, color: tokens.text2, marginBottom: 6,
                 textTransform: 'uppercase', letterSpacing: 0.4,
               }}>{cat}</Text>
-              {ct.map((t) => {
-                const lv = latest[t.id];
-                const f = flagVal(t, lv.v);
-                return (
-                  <Pressable
-                    accessibilityRole="button"
-                    key={t.id}
-                    onPress={() => setScreen({ kind: 'graph', test: t })}
-                    style={{
-                      backgroundColor: tokens.card, borderRadius: 11, padding: 10, marginBottom: 5,
-                      borderWidth: 2,
-                      borderColor: f === 'normal' || f === 'qual' ? tokens.border : flagClr(f),
-                      flexDirection: 'row', alignItems: 'center', gap: 10,
-                    }}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ fontWeight: '800', fontSize: 13, color: tokens.text }}>{t.name}</Text>
-                      <Text style={{ fontSize: 10, color: tokens.text2, fontWeight: '600' }}>{lv.date}</Text>
-                    </View>
-                    <View style={{ alignItems: 'flex-end', marginRight: 6 }}>
-                      <Text style={{ fontWeight: '900', fontSize: 15, color: flagClr(f) }}>{lv.v}</Text>
-                      <Text style={{ fontSize: 10, color: tokens.text2 }}>{t.unit}</Text>
-                    </View>
-                    <View style={{
-                      backgroundColor: flagBg(f), borderWidth: 1, borderColor: flagClr(f),
-                      borderRadius: 6, paddingHorizontal: 7, paddingVertical: 2,
-                    }}>
-                      <Text style={{ fontSize: 10, fontWeight: '800', color: flagClr(f) }}>{flagLbl(f)}</Text>
-                    </View>
-                    <TrendingUp size={13} color={tokens.text2} />
-                  </Pressable>
-                );
-              })}
+              {ct.map((t) => (
+                <LabRow
+                  key={t.id}
+                  test={t}
+                  latestValue={latest[t.id]?.v ?? null}
+                  history={histories[t.id] ?? []}
+                />
+              ))}
             </View>
           );
         })}
