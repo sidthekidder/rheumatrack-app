@@ -172,6 +172,10 @@ export interface Patient {
   doctorHospital?: string | null;
   diagnosis?: string | null;
   theme?: string | null;
+  doctorWebsiteUrl?: string | null;
+  doctorInstagramUrl?: string | null;
+  doctorYoutubeUrl?: string | null;
+  language?: 'en' | 'hi' | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -189,6 +193,10 @@ export interface PatientCreate {
   doctorHospital?: string | null;
   diagnosis?: string | null;
   theme?: string | null;
+  doctorWebsiteUrl?: string | null;
+  doctorInstagramUrl?: string | null;
+  doctorYoutubeUrl?: string | null;
+  language?: 'en' | 'hi' | null;
 }
 
 export type PatientUpdate = Partial<PatientCreate>;
