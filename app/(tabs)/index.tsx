@@ -6,6 +6,7 @@ import { useRouter, type Href } from 'expo-router';
 import Logo from '@/components/Logo';
 import Wordmark from '@/components/Wordmark';
 import DoctorCard from '@/components/DoctorCard';
+import DoctorSocialLinks from '@/components/DoctorSocialLinks';
 import ProgressHeader from '@/components/ProgressHeader';
 import SlotCard from '@/components/SlotCard';
 import { TS_DATA, type SlotId } from '@/constants/slots';
@@ -199,14 +200,22 @@ export default function HomeScreen() {
           ) : null}
 
           {patient?.doctorName && patient?.doctorPhone ? (
-            <DoctorCard
-              name={patient.doctorName}
-              specialty={patient.doctorSpecialty}
-              phone={patient.doctorPhone}
-              patientName={patient.name}
-              patientId={patient.patientId}
-              diagnosis={patient.diagnosis}
-            />
+            <>
+              <DoctorCard
+                name={patient.doctorName}
+                specialty={patient.doctorSpecialty}
+                phone={patient.doctorPhone}
+                patientName={patient.name}
+                patientId={patient.patientId}
+                diagnosis={patient.diagnosis}
+              />
+              <DoctorSocialLinks
+                websiteUrl={patient.doctorWebsiteUrl}
+                instagramUrl={patient.doctorInstagramUrl}
+                youtubeUrl={patient.doctorYoutubeUrl}
+                variant="frosted"
+              />
+            </>
           ) : null}
         </View>
       </ScrollView>
