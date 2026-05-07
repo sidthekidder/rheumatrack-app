@@ -3,7 +3,8 @@ import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter, type Href } from 'expo-router';
-import { Pill } from 'lucide-react-native';
+import Logo from '@/components/Logo';
+import Wordmark from '@/components/Wordmark';
 import DoctorCard from '@/components/DoctorCard';
 import ProgressHeader from '@/components/ProgressHeader';
 import SlotCard from '@/components/SlotCard';
@@ -190,10 +191,10 @@ export default function HomeScreen() {
                 marginBottom: 14,
               }}
             >
-              <Pill size={17} color="#0D9488" />
-              <Text style={{ color: '#0D9488', fontWeight: '700', fontSize: 14 }}>
-                View All Medicines
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Logo size={28} />
+                <Wordmark size={20} />
+              </View>
             </Pressable>
           ) : null}
 
