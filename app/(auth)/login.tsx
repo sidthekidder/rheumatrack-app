@@ -13,8 +13,10 @@ import { Link } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Colors } from '../../constants/Colors';
 import { notify } from '../../lib/notify';
+import { useT } from '@/lib/i18n/useT';
 
 export default function LoginScreen() {
+  const t = useT();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,7 +26,7 @@ export default function LoginScreen() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setLoading(false);
-      notify('Sign In Failed', error.message);
+      notify(t('auth_sign_in_failed'), error.message);
       return;
     }
     // On success keep the spinner — the auth gate will route us away once the
@@ -41,7 +43,7 @@ export default function LoginScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder={t('auth_email')}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -50,7 +52,7 @@ export default function LoginScreen() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder={t('auth_password')}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -65,16 +67,16 @@ export default function LoginScreen() {
         {loading ? (
           <View style={styles.buttonRow}>
             <ActivityIndicator size="small" color="#fff" />
-            <Text style={styles.buttonText}>Signing in…</Text>
+            <Text style={styles.buttonText}>{t('auth_signing_in')}</Text>
           </View>
         ) : (
-          <Text style={styles.buttonText}>Sign In</Text>
+          <Text style={styles.buttonText}>{t('auth_sign_in')}</Text>
         )}
       </TouchableOpacity>
 
       <View style={styles.footer}>
-        <Link href="/(auth)/register" style={styles.link}>Create account</Link>
-        <Link href="/(auth)/forgot-password" style={styles.link}>Forgot password?</Link>
+        <Link href="/(auth)/register" style={styles.link}>{t('auth_create_account_link')}</Link>
+        <Link href="/(auth)/forgot-password" style={styles.link}>{t('auth_forgot_password')}</Link>
       </View>
     </KeyboardAvoidingView>
   );

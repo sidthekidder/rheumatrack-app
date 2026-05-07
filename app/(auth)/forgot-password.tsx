@@ -10,8 +10,10 @@ import { Link } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Colors } from '../../constants/Colors';
 import { notify } from '../../lib/notify';
+import { useT } from '@/lib/i18n/useT';
 
 export default function ForgotPasswordScreen() {
+  const t = useT();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -20,22 +22,22 @@ export default function ForgotPasswordScreen() {
     const { error } = await supabase.auth.resetPasswordForEmail(email);
     setLoading(false);
     if (error) {
-      notify('Error', error.message);
+      notify(t('auth_error'), error.message);
       return;
     }
-    notify('Email sent', 'Check your inbox for a password reset link.');
+    notify(t('auth_email_sent'), t('auth_check_inbox'));
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reset Password</Text>
+      <Text style={styles.title}>{t('auth_reset_password')}</Text>
       <Text style={styles.subtitle}>
-        Enter your email and we'll send you a reset link.
+        {t('auth_reset_subtitle')}
       </Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder={t('auth_email')}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -44,10 +46,10 @@ export default function ForgotPasswordScreen() {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleReset} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Sending…' : 'Send Reset Link'}</Text>
+        <Text style={styles.buttonText}>{loading ? t('auth_sending') : t('auth_send_reset_link')}</Text>
       </TouchableOpacity>
 
-      <Link href="/(auth)/login" style={styles.link}>Back to sign in</Link>
+      <Link href="/(auth)/login" style={styles.link}>{t('auth_back_to_sign_in')}</Link>
     </View>
   );
 }

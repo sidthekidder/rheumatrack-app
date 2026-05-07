@@ -11,8 +11,10 @@ import { Link, router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Colors } from '../../constants/Colors';
 import { notify } from '../../lib/notify';
+import { useT } from '@/lib/i18n/useT';
 
 export default function RegisterScreen() {
+  const t = useT();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,10 +24,10 @@ export default function RegisterScreen() {
     const { error } = await supabase.auth.signUp({ email, password });
     setLoading(false);
     if (error) {
-      notify('Sign Up Failed', error.message);
+      notify(t('auth_sign_up_failed'), error.message);
       return;
     }
-    notify('Check your email', 'We sent you a confirmation link. Sign in once your address is verified.');
+    notify(t('auth_check_email'), t('auth_confirmation_sent'));
     router.replace('/(auth)/login');
   }
 
@@ -34,11 +36,11 @@ export default function RegisterScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <Text style={styles.title}>Create Account</Text>
+      <Text style={styles.title}>{t('auth_create_account')}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder={t('auth_email')}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -47,7 +49,7 @@ export default function RegisterScreen() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Password (min. 8 characters)"
+        placeholder={t('auth_password_hint')}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -55,10 +57,10 @@ export default function RegisterScreen() {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Creating account…' : 'Create Account'}</Text>
+        <Text style={styles.buttonText}>{loading ? t('auth_creating_account') : t('auth_create_account')}</Text>
       </TouchableOpacity>
 
-      <Link href="/(auth)/login" style={styles.link}>Already have an account? Sign in</Link>
+      <Link href="/(auth)/login" style={styles.link}>{t('auth_have_account')}</Link>
     </KeyboardAvoidingView>
   );
 }

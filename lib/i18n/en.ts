@@ -294,6 +294,59 @@ export const en = {
 
   // Phase 3 HealthCard WhatsApp
   hello_doctor: 'Hello {name},',
+
+  // Phase 3 Auth screens
+  auth_sign_in: 'Sign In',
+  auth_signing_in: 'Signing in…',
+  auth_sign_in_failed: 'Sign In Failed',
+  auth_create_account: 'Create Account',
+  auth_creating_account: 'Creating account…',
+  auth_sign_up_failed: 'Sign Up Failed',
+  auth_check_email: 'Check your email',
+  auth_confirmation_sent: 'We sent you a confirmation link. Sign in once your address is verified.',
+  auth_have_account: 'Already have an account? Sign in',
+  auth_create_account_link: 'Create account',
+  auth_forgot_password: 'Forgot password?',
+  auth_reset_password: 'Reset Password',
+  auth_reset_subtitle: "Enter your email and we'll send you a reset link.",
+  auth_send_reset_link: 'Send Reset Link',
+  auth_sending: 'Sending…',
+  auth_email_sent: 'Email sent',
+  auth_check_inbox: 'Check your inbox for a password reset link.',
+  auth_back_to_sign_in: 'Back to sign in',
+  auth_error: 'Error',
+  auth_email: 'Email',
+  auth_password: 'Password',
+  auth_password_hint: 'Password (min. 8 characters)',
+
+  // Phase 3 Onboarding screens
+  onb_your_details: 'Your Details',
+  onb_your_doctor: 'Your Doctor',
+  onb_tagline_sub: 'Personal medicine reminder & health guide for Rheumatology patients',
+  onb_feature_scan: '📷  Scan your prescription with AI',
+  onb_feature_reminders: '💊  Auto-set reminders for every medicine',
+  onb_feature_calendar: '📅  Track compliance on calendar',
+  onb_feature_whatsapp: '👨‍⚕️  One-tap WhatsApp to your doctor',
+  onb_full_name_req: 'Full Name *',
+  onb_city_req: 'City *',
+  onb_doctor_name_req: "Doctor's Name *",
+  onb_optional: 'optional',
+  onb_wa_hint_banner: "💡 Doctor's WhatsApp will be saved for one-tap contact.",
+  onb_get_started_rocket: '🚀 Get Started',
+  onb_saving: 'Saving…',
+  onb_failed_save: 'Failed to save patient',
+  onb_age_placeholder: '55',
+  onb_city_placeholder: 'e.g. Nagpur',
+  onb_name_placeholder: 'e.g. Rajesh Kumar',
+  onb_doctor_placeholder: 'e.g. Dr. Tanmay Agrawal',
+  onb_hospital_placeholder: 'e.g. Immunocare Clinic, Nagpur',
+  onb_phone_placeholder: '98765 43210',
+
+  // Phase 3 Home screen
+  home_no_meds_heading: 'No medicines added yet',
+  home_scan_subtitle: 'Tap Scan to upload prescription, or add manually',
+  home_scan_btn: '📷 Scan Prescription',
+  home_error: "Couldn't load some data. Pull to refresh.",
 } as const;
 
 export type StringKey = keyof typeof en;
