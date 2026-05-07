@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import Logo from '@/components/Logo';
+import Wordmark from '@/components/Wordmark';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import { Session } from '@supabase/supabase-js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -82,9 +84,42 @@ class RootErrorBoundary extends React.Component<
 
 function BootSplash({ label }: { label: string }) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F172A' }}>
-      <ActivityIndicator size="large" color="#14B8A6" />
-      <Text style={{ color: '#E2E8F0', marginTop: 12, fontSize: 14 }}>{label}</Text>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#0F172A',
+        gap: 24,
+      }}
+    >
+      <Logo size={72} />
+      <Wordmark size={32} />
+      <Text style={{ color: '#94A3B8', fontSize: 14 }}>Your rheumatology companion</Text>
+      <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+        <SplashPill label="💊 Track meds" />
+        <SplashPill label="📊 Log symptoms" />
+        <SplashPill label="🧪 Scan labs" />
+      </View>
+      <ActivityIndicator size="small" color="#14B8A6" style={{ marginTop: 8 }} />
+      <Text style={{ color: '#475569', fontSize: 12 }}>{label}</Text>
+    </View>
+  );
+}
+
+function SplashPill({ label }: { label: string }) {
+  return (
+    <View
+      style={{
+        backgroundColor: '#1E293B',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: '#334155',
+      }}
+    >
+      <Text style={{ color: '#CBD5E1', fontSize: 11, fontWeight: '600' }}>{label}</Text>
     </View>
   );
 }
