@@ -2,8 +2,10 @@ import { Pressable, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../../lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 export default function Welcome() {
+  const t = useT();
   const router = useRouter();
   const { tokens } = useTheme();
 
@@ -38,7 +40,7 @@ export default function Welcome() {
           textAlign: 'center',
         }}
       >
-        Personal medicine reminder & health guide for Rheumatology patients
+        {t('onb_tagline_sub')}
       </Text>
 
       <View
@@ -52,12 +54,12 @@ export default function Welcome() {
           width: '100%',
         }}
       >
-        {[
-          '📷  Scan your prescription with AI',
-          '💊  Auto-set reminders for every medicine',
-          '📅  Track compliance on calendar',
-          '👨‍⚕️  One-tap WhatsApp to your doctor',
-        ].map((line, i, arr) => (
+        {([
+          t('onb_feature_scan'),
+          t('onb_feature_reminders'),
+          t('onb_feature_calendar'),
+          t('onb_feature_whatsapp'),
+        ] as string[]).map((line, i, arr) => (
           <Text
             key={i}
             style={{
@@ -85,7 +87,7 @@ export default function Welcome() {
           style={{ paddingVertical: 14, alignItems: 'center' }}
         >
           <Text style={{ color: 'white', fontWeight: '900', fontSize: 18 }}>
-            Get Started →
+            {t('get_started')}
           </Text>
         </LinearGradient>
       </Pressable>

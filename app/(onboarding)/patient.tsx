@@ -13,8 +13,10 @@ import { ArrowLeft } from 'lucide-react-native';
 import ProgressDots from '../../components/ProgressDots';
 import { useTheme } from '../../lib/themeStore';
 import { useOnboardingStore } from '../../lib/onboardingStore';
+import { useT } from '@/lib/i18n/useT';
 
 export default function PatientDetails() {
+  const t = useT();
   const router = useRouter();
   const { tokens } = useTheme();
   const p = useOnboardingStore((s) => s.patient);
@@ -78,7 +80,7 @@ export default function PatientDetails() {
             <ArrowLeft size={17} color="white" />
           </Pressable>
           <Text style={{ fontSize: 23, fontWeight: '900', color: 'white' }}>
-            Your Details
+            {t('your_details')}
           </Text>
           <Text
             style={{
@@ -88,57 +90,57 @@ export default function PatientDetails() {
               marginTop: 2,
             }}
           >
-            Step 1 of 2
+            {t('step_1_of_2')}
           </Text>
           <ProgressDots total={2} current={0} />
         </LinearGradient>
 
         <View style={{ padding: 16 }}>
-          <Lbl>Full Name *</Lbl>
+          <Lbl>{t('onb_full_name_req')}</Lbl>
           <TextInput
             value={p.name}
             onChangeText={(v) => setPatient({ ...p, name: v })}
-            placeholder="e.g. Rajesh Kumar"
+            placeholder={t('onb_name_placeholder')}
             placeholderTextColor={tokens.text2}
             style={inp}
           />
 
           <View style={{ flexDirection: 'row', gap: 9 }}>
             <View style={{ flex: 1 }}>
-              <Lbl>Age</Lbl>
+              <Lbl>{t('age')}</Lbl>
               <TextInput
                 value={p.age}
                 onChangeText={(v) => setPatient({ ...p, age: v })}
-                placeholder="55"
+                placeholder={t('onb_age_placeholder')}
                 placeholderTextColor={tokens.text2}
                 keyboardType="number-pad"
                 style={inp}
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Lbl>Patient ID</Lbl>
+              <Lbl>{t('patient_id')}</Lbl>
               <TextInput
                 value={p.patientId}
                 onChangeText={(v) => setPatient({ ...p, patientId: v })}
-                placeholder="optional"
+                placeholder={t('onb_optional')}
                 placeholderTextColor={tokens.text2}
                 style={inp}
               />
             </View>
           </View>
 
-          <Lbl>City *</Lbl>
+          <Lbl>{t('onb_city_req')}</Lbl>
           <TextInput
             value={p.city}
             onChangeText={(v) => setPatient({ ...p, city: v })}
-            placeholder="e.g. Nagpur"
+            placeholder={t('onb_city_placeholder')}
             placeholderTextColor={tokens.text2}
             style={inp}
           />
 
           <View style={{ flexDirection: 'row', gap: 9 }}>
             <View style={{ flex: 1 }}>
-              <Lbl>State</Lbl>
+              <Lbl>{t('state')}</Lbl>
               <TextInput
                 value={p.state}
                 onChangeText={(v) => setPatient({ ...p, state: v })}
@@ -147,7 +149,7 @@ export default function PatientDetails() {
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Lbl>Country</Lbl>
+              <Lbl>{t('country')}</Lbl>
               <TextInput
                 value={p.country}
                 onChangeText={(v) => setPatient({ ...p, country: v })}
@@ -177,7 +179,7 @@ export default function PatientDetails() {
                 <Text
                   style={{ color: 'white', fontWeight: '900', fontSize: 17 }}
                 >
-                  Continue →
+                  {t('continue')}
                 </Text>
               </LinearGradient>
             ) : (
@@ -191,7 +193,7 @@ export default function PatientDetails() {
                 <Text
                   style={{ color: 'white', fontWeight: '900', fontSize: 17 }}
                 >
-                  Continue →
+                  {t('continue')}
                 </Text>
               </View>
             )}

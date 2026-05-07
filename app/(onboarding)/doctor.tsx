@@ -16,6 +16,7 @@ import { useTheme } from '../../lib/themeStore';
 import { useUpsertPatient } from '../../lib/queries';
 import type { PatientCreate } from '../../lib/api';
 import { useOnboardingStore } from '../../lib/onboardingStore';
+import { useT } from '@/lib/i18n/useT';
 
 interface DoctorForm {
   name: string;
@@ -33,6 +34,7 @@ const SPECIALTIES = [
 ];
 
 export default function DoctorDetails() {
+  const t = useT();
   const router = useRouter();
   const { tokens } = useTheme();
   const upsert = useUpsertPatient();
@@ -78,7 +80,7 @@ export default function DoctorDetails() {
           useOnboardingStore.getState().reset();
         }
       },
-      onError: (e) => setErrMsg(e.message ?? 'Failed to save patient'),
+      onError: (e) => setErrMsg(e.message ?? t('onb_failed_save')),
     });
   };
 
@@ -140,7 +142,7 @@ export default function DoctorDetails() {
             <ArrowLeft size={17} color="white" />
           </Pressable>
           <Text style={{ fontSize: 23, fontWeight: '900', color: 'white' }}>
-            Your Doctor
+            {t('your_doctor')}
           </Text>
           <Text
             style={{
@@ -150,7 +152,7 @@ export default function DoctorDetails() {
               marginTop: 2,
             }}
           >
-            Step 2 of 2
+            {t('step_2_of_2')}
           </Text>
           <ProgressDots total={2} current={1} />
         </LinearGradient>
@@ -170,20 +172,20 @@ export default function DoctorDetails() {
             <Text
               style={{ fontSize: 13, color: '#0D9488', fontWeight: '700' }}
             >
-              💡 Doctor's WhatsApp will be saved for one-tap contact.
+              {t('onb_wa_hint_banner')}
             </Text>
           </View>
 
-          <Lbl>Doctor's Name *</Lbl>
+          <Lbl>{t('onb_doctor_name_req')}</Lbl>
           <TextInput
             value={d.name}
             onChangeText={(v) => setD({ ...d, name: v })}
-            placeholder="e.g. Dr. Tanmay Agrawal"
+            placeholder={t('onb_doctor_placeholder')}
             placeholderTextColor={tokens.text2}
             style={inp}
           />
 
-          <Lbl>Specialty</Lbl>
+          <Lbl>{t('specialty')}</Lbl>
           <View
             style={{
               flexDirection: 'row',
@@ -223,7 +225,7 @@ export default function DoctorDetails() {
             })}
           </View>
 
-          <Lbl>WhatsApp Number *</Lbl>
+          <Lbl>{t('whatsapp_number')} *</Lbl>
           <View
             style={{
               flexDirection: 'row',
@@ -253,18 +255,18 @@ export default function DoctorDetails() {
             <TextInput
               value={d.phone}
               onChangeText={(v) => setD({ ...d, phone: v })}
-              placeholder="98765 43210"
+              placeholder={t('onb_phone_placeholder')}
               placeholderTextColor={tokens.text2}
               keyboardType="phone-pad"
               style={{ ...inp, flex: 1, marginBottom: 0 }}
             />
           </View>
 
-          <Lbl>Hospital / Clinic</Lbl>
+          <Lbl>{t('hospital_clinic')}</Lbl>
           <TextInput
             value={d.hospital}
             onChangeText={(v) => setD({ ...d, hospital: v })}
-            placeholder="e.g. Immunocare Clinic, Nagpur"
+            placeholder={t('onb_hospital_placeholder')}
             placeholderTextColor={tokens.text2}
             style={inp}
           />
@@ -293,7 +295,7 @@ export default function DoctorDetails() {
                   color: tokens.text2,
                 }}
               >
-                Skip
+                {t('skip')}
               </Text>
             </Pressable>
 
@@ -318,7 +320,7 @@ export default function DoctorDetails() {
                       fontSize: 16,
                     }}
                   >
-                    🚀 Get Started
+                    {t('onb_get_started_rocket')}
                   </Text>
                 </LinearGradient>
               ) : (
@@ -336,7 +338,7 @@ export default function DoctorDetails() {
                       fontSize: 16,
                     }}
                   >
-                    {busy ? 'Saving…' : '🚀 Get Started'}
+                    {busy ? t('onb_saving') : t('onb_get_started_rocket')}
                   </Text>
                 </View>
               )}
