@@ -5,9 +5,11 @@ import DoctorSocialLinks from '@/components/DoctorSocialLinks';
 import { usePatchPatient, usePatient } from '@/lib/queries';
 import { waPhone } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 export default function DoctorSection() {
   const { tokens } = useTheme();
+  const t = useT();
   const patientQ = usePatient();
   const patient = patientQ.data;
   const patchMutation = usePatchPatient();
@@ -45,7 +47,7 @@ export default function DoctorSection() {
         doctorInstagramUrl: instagram.trim() || null,
         doctorYoutubeUrl: youtube.trim() || null,
       },
-      { onSuccess: () => setEditing(false), onError: (e) => Alert.alert('Save failed', String(e)) }
+      { onSuccess: () => setEditing(false), onError: (e) => Alert.alert(t('save_failed'), String(e)) }
     );
   };
 
@@ -63,20 +65,20 @@ export default function DoctorSection() {
 
   if (editing) {
     return (
-      <Section title="👨‍⚕️ Your Doctor" onEdit={null}>
-        <Field label="Doctor name"><TextInput value={name} onChangeText={setName} style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
-        <Field label="Specialty"><TextInput value={specialty} onChangeText={setSpecialty} style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
-        <Field label="Hospital"><TextInput value={hospital} onChangeText={setHospital} style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
-        <Field label="Phone"><TextInput value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
-        <Field label="Website URL"><TextInput value={website} onChangeText={setWebsite} autoCapitalize="none" placeholder="https://..." style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
-        <Field label="Instagram URL"><TextInput value={instagram} onChangeText={setInstagram} autoCapitalize="none" placeholder="https://instagram.com/..." style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
-        <Field label="YouTube URL"><TextInput value={youtube} onChangeText={setYoutube} autoCapitalize="none" placeholder="https://youtube.com/..." style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
+      <Section title={`👨‍⚕️ ${t('your_doctor')}`} onEdit={null}>
+        <Field label={t('doctor_name')}><TextInput value={name} onChangeText={setName} style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
+        <Field label={t('specialty')}><TextInput value={specialty} onChangeText={setSpecialty} style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
+        <Field label={t('hospital_clinic')}><TextInput value={hospital} onChangeText={setHospital} style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
+        <Field label={t('whatsapp_number')}><TextInput value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
+        <Field label={t('website_url')}><TextInput value={website} onChangeText={setWebsite} autoCapitalize="none" placeholder="https://..." style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
+        <Field label={t('instagram_url')}><TextInput value={instagram} onChangeText={setInstagram} autoCapitalize="none" placeholder="https://instagram.com/..." style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
+        <Field label={t('youtube_url')}><TextInput value={youtube} onChangeText={setYoutube} autoCapitalize="none" placeholder="https://youtube.com/..." style={inputStyle(tokens)} placeholderTextColor={tokens.text2} /></Field>
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
           <Pressable onPress={onCancel} style={{ flex: 1, padding: 12, borderRadius: 8, backgroundColor: tokens.card2, alignItems: 'center' }}>
-            <Text style={{ color: tokens.text, fontWeight: '700' }}>Cancel</Text>
+            <Text style={{ color: tokens.text, fontWeight: '700' }}>{t('cancel')}</Text>
           </Pressable>
           <Pressable onPress={onSave} disabled={patchMutation.isPending} style={{ flex: 1, padding: 12, borderRadius: 8, backgroundColor: '#0D9488', alignItems: 'center', opacity: patchMutation.isPending ? 0.6 : 1 }}>
-            <Text style={{ color: 'white', fontWeight: '700' }}>{patchMutation.isPending ? 'Saving…' : 'Save'}</Text>
+            <Text style={{ color: 'white', fontWeight: '700' }}>{patchMutation.isPending ? t('saving') : t('save')}</Text>
           </Pressable>
         </View>
       </Section>
@@ -84,7 +86,7 @@ export default function DoctorSection() {
   }
 
   return (
-    <Section title="👨‍⚕️ Your Doctor" onEdit={enterEdit}>
+    <Section title={`👨‍⚕️ ${t('your_doctor')}`} onEdit={enterEdit}>
       {patient.doctorName ? <Text style={{ color: tokens.text, fontWeight: '700', fontSize: 16 }}>{patient.doctorName}</Text> : null}
       {patient.doctorSpecialty ? <Text style={{ color: tokens.text2, fontSize: 13 }}>{patient.doctorSpecialty}</Text> : null}
       {patient.doctorHospital ? <Text style={{ color: tokens.text2, fontSize: 13 }}>{patient.doctorHospital}</Text> : null}
@@ -94,11 +96,11 @@ export default function DoctorSection() {
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
           <Pressable onPress={onWhatsApp} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 10, borderRadius: 8, backgroundColor: '#22C55E' }}>
             <MessageCircle color="white" size={16} />
-            <Text style={{ color: 'white', fontWeight: '700', fontSize: 13 }}>WhatsApp</Text>
+            <Text style={{ color: 'white', fontWeight: '700', fontSize: 13 }}>{t('me_whatsapp')}</Text>
           </Pressable>
           <Pressable onPress={onCall} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 10, borderRadius: 8, backgroundColor: '#0D9488' }}>
             <Phone color="white" size={16} />
-            <Text style={{ color: 'white', fontWeight: '700', fontSize: 13 }}>Call</Text>
+            <Text style={{ color: 'white', fontWeight: '700', fontSize: 13 }}>{t('call')}</Text>
           </Pressable>
         </View>
       ) : null}

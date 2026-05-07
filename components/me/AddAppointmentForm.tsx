@@ -7,9 +7,18 @@ import { ArrowLeft, Check } from 'lucide-react-native';
 import { useCreateAppointment, usePatchAppointment, usePatient } from '@/lib/queries';
 import type { Appointment, AppointmentCreate } from '@/lib/api';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 const VISIT_TYPES = ['Routine Follow-up', 'New Symptom', 'Lab Review', 'Other'] as const;
 type VisitType = (typeof VISIT_TYPES)[number];
+
+// Map DB-stored visit type values to i18n keys
+const VISIT_TYPE_KEYS: Record<VisitType, 'visit_routine' | 'visit_new_symptom' | 'visit_lab_review' | 'visit_other'> = {
+  'Routine Follow-up': 'visit_routine',
+  'New Symptom': 'visit_new_symptom',
+  'Lab Review': 'visit_lab_review',
+  'Other': 'visit_other',
+};
 
 function defaultDate(): string {
   const d = new Date();
@@ -24,6 +33,7 @@ interface Props {
 export default function AddAppointmentForm({ editAppt }: Props) {
   const router = useRouter();
   const { tokens } = useTheme();
+  const t = useT();
   const patientQ = usePatient();
   const createMutation = useCreateAppointment();
   const patchMutation = usePatchAppointment();
@@ -43,7 +53,7 @@ export default function AddAppointmentForm({ editAppt }: Props) {
 
   const onSubmit = () => {
     if (!doctorName.trim()) {
-      Alert.alert('Missing field', 'Doctor name is required.');
+      Alert.alert(t('appt_missing_field'), t('appt_doctor_required'));
       return;
     }
     const payload: AppointmentCreate = {
@@ -58,12 +68,12 @@ export default function AddAppointmentForm({ editAppt }: Props) {
     if (isEdit) {
       patchMutation.mutate(
         { id: editAppt.id, body: payload },
-        { onSuccess: () => router.back(), onError: (e) => Alert.alert('Update failed', String(e)) }
+        { onSuccess: () => router.back(), onError: (e) => Alert.alert(t('appt_update_failed'), String(e)) }
       );
     } else {
       createMutation.mutate(payload, {
         onSuccess: () => router.back(),
-        onError: (e) => Alert.alert('Save failed', String(e)),
+        onError: (e) => Alert.alert(t('appt_save_failed'), String(e)),
       });
     }
   };
@@ -77,49 +87,49 @@ export default function AddAppointmentForm({ editAppt }: Props) {
             <ArrowLeft color={tokens.text} size={22} />
           </Pressable>
           <Text style={{ color: tokens.text, fontSize: 18, fontWeight: '800' }}>
-            {isEdit ? 'Edit Appointment' : 'New Appointment'}
+            {isEdit ? t('edit_appointment') : t('new_appointment')}
           </Text>
         </View>
 
         <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
-          <Field label="Date">
+          <Field label={t('appt_date_label')}>
             <TextInput value={date} onChangeText={setDate} placeholder="YYYY-MM-DD" placeholderTextColor={tokens.text2} style={inputStyle(tokens)} />
           </Field>
-          <Field label="Time">
+          <Field label={t('appt_time_label')}>
             <TextInput value={time} onChangeText={setTime} placeholder="HH:MM" placeholderTextColor={tokens.text2} style={inputStyle(tokens)} />
           </Field>
-          <Field label="Visit type">
+          <Field label={t('visit_type')}>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {VISIT_TYPES.map((t) => {
-                const active = visitType === t;
+              {VISIT_TYPES.map((vt) => {
+                const active = visitType === vt;
                 return (
                   <Pressable
-                    key={t}
-                    onPress={() => setVisitType(t)}
+                    key={vt}
+                    onPress={() => setVisitType(vt)}
                     style={{
                       paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8,
                       backgroundColor: active ? '#0D9488' : tokens.card,
                       borderWidth: 1, borderColor: active ? '#0D9488' : tokens.border,
                     }}
                   >
-                    <Text style={{ color: active ? 'white' : tokens.text, fontWeight: '700', fontSize: 13 }}>{t}</Text>
+                    <Text style={{ color: active ? 'white' : tokens.text, fontWeight: '700', fontSize: 13 }}>{t(VISIT_TYPE_KEYS[vt])}</Text>
                   </Pressable>
                 );
               })}
             </View>
           </Field>
-          <Field label="Doctor name">
+          <Field label={t('doctor_name')}>
             <TextInput value={doctorName} onChangeText={setDoctorName} placeholder="Dr. ..." placeholderTextColor={tokens.text2} style={inputStyle(tokens)} />
           </Field>
-          <Field label="Clinic">
-            <TextInput value={clinic} onChangeText={setClinic} placeholder="Hospital or clinic name" placeholderTextColor={tokens.text2} style={inputStyle(tokens)} />
+          <Field label={t('appt_clinic_label')}>
+            <TextInput value={clinic} onChangeText={setClinic} placeholder={t('appt_clinic_placeholder')} placeholderTextColor={tokens.text2} style={inputStyle(tokens)} />
           </Field>
-          <Field label="Pre-visit notes">
-            <TextInput value={preNotes} onChangeText={setPreNotes} multiline placeholder="Questions to ask, symptoms to mention" placeholderTextColor={tokens.text2} style={[inputStyle(tokens), { minHeight: 80, textAlignVertical: 'top' }]} />
+          <Field label={t('pre_visit_notes')}>
+            <TextInput value={preNotes} onChangeText={setPreNotes} multiline placeholder={t('pre_visit_placeholder')} placeholderTextColor={tokens.text2} style={[inputStyle(tokens), { minHeight: 80, textAlignVertical: 'top' }]} />
           </Field>
           {isEdit ? (
-            <Field label="Post-visit notes">
-              <TextInput value={postNotes} onChangeText={setPostNotes} multiline placeholder="What the doctor said" placeholderTextColor={tokens.text2} style={[inputStyle(tokens), { minHeight: 80, textAlignVertical: 'top' }]} />
+            <Field label={t('post_visit_notes')}>
+              <TextInput value={postNotes} onChangeText={setPostNotes} multiline placeholder={t('post_visit_placeholder')} placeholderTextColor={tokens.text2} style={[inputStyle(tokens), { minHeight: 80, textAlignVertical: 'top' }]} />
             </Field>
           ) : null}
 
@@ -134,7 +144,7 @@ export default function AddAppointmentForm({ editAppt }: Props) {
           >
             <Check color="white" size={18} />
             <Text style={{ color: 'white', fontWeight: '700', fontSize: 15 }}>
-              {isSaving ? (isEdit ? 'Updating…' : 'Saving…') : (isEdit ? 'Update Appointment' : 'Save Appointment')}
+              {isSaving ? (isEdit ? t('me_updating') : t('saving')) : (isEdit ? t('update_appointment') : t('save_appointment'))}
             </Text>
           </Pressable>
         </ScrollView>

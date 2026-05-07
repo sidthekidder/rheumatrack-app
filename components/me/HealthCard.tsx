@@ -6,6 +6,7 @@ import { LAB_TESTS, flagVal } from '@/constants/labs';
 import { TS_DATA } from '@/constants/slots';
 import { getMedsForDate, today } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 // ────────────────────────────────────────────────────────────────────
 // Pure helpers (unit-testable)
@@ -76,6 +77,7 @@ export function formatHealthCardForShare(input: ShareInput): string {
 
 export default function HealthCard() {
   const { tokens } = useTheme();
+  const t = useT();
   const todayStr = today();
   const patientQ = usePatient();
   const medsQ = useMedicines();
@@ -149,14 +151,14 @@ export default function HealthCard() {
   if (patientQ.isLoading || medsQ.isLoading) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.bg }}>
-        <Text style={{ color: tokens.text2 }}>Loading…</Text>
+        <Text style={{ color: tokens.text2 }}>{t('loading')}</Text>
       </View>
     );
   }
   if (!patient) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: tokens.bg, padding: 24 }}>
-        <Text style={{ color: tokens.text2 }}>Complete onboarding to view your Health Card.</Text>
+        <Text style={{ color: tokens.text2 }}>{t('complete_onboarding')}</Text>
       </View>
     );
   }
@@ -202,13 +204,13 @@ export default function HealthCard() {
         ) : null}
         {patient.diagnosis ? (
           <Text style={{ color: tokens.text, marginTop: 8, fontSize: 14 }}>
-            <Text style={{ fontWeight: '700' }}>Diagnosis: </Text>{patient.diagnosis}
+            <Text style={{ fontWeight: '700' }}>{t('hc_diagnosis_label')} </Text>{patient.diagnosis}
           </Text>
         ) : null}
       </View>
 
       <View style={{ backgroundColor: tokens.card, borderRadius: 16, padding: 16, marginBottom: 16 }}>
-        <Text style={{ color: tokens.text, fontWeight: '700', fontSize: 14 }}>Today's Compliance</Text>
+        <Text style={{ color: tokens.text, fontWeight: '700', fontSize: 14 }}>{t('todays_compliance')}</Text>
         <Text style={{ color: '#0D9488', fontSize: 28, fontWeight: '800', marginTop: 4 }}>
           {compliancePct}%
           <Text style={{ color: tokens.text2, fontSize: 14, fontWeight: '600' }}>  ({totalTaken}/{totalDue})</Text>
@@ -217,7 +219,7 @@ export default function HealthCard() {
 
       {medicines.length > 0 ? (
         <View style={{ backgroundColor: tokens.card, borderRadius: 16, padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: tokens.text, fontWeight: '700', fontSize: 14, marginBottom: 8 }}>Current Medicines ({medicines.length})</Text>
+          <Text style={{ color: tokens.text, fontWeight: '700', fontSize: 14, marginBottom: 8 }}>{t('current_medicines')} ({medicines.length})</Text>
           {medicines.map((m) => (
             <Text key={m.id} style={{ color: tokens.text, fontSize: 13, paddingVertical: 4 }}>
               • <Text style={{ fontWeight: '700' }}>{m.drugName} {m.dose}</Text> — {scheduleSummary(m)}
@@ -228,7 +230,7 @@ export default function HealthCard() {
 
       {abnormalLabs.length > 0 ? (
         <View style={{ backgroundColor: tokens.card, borderRadius: 16, padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: tokens.text, fontWeight: '700', fontSize: 14, marginBottom: 8 }}>Abnormal Labs (last 30 days)</Text>
+          <Text style={{ color: tokens.text, fontWeight: '700', fontSize: 14, marginBottom: 8 }}>{t('abnormal_labs_30')}</Text>
           {abnormalLabs.map((l) => (
             <Text key={l.testKey} style={{ color: tokens.text, fontSize: 13, paddingVertical: 4 }}>
               • <Text style={{ fontWeight: '700' }}>{l.label}:</Text> {l.value}  <Text style={{ color: tokens.text2 }}>(normal {l.normalRange})</Text>
@@ -238,7 +240,7 @@ export default function HealthCard() {
       ) : null}
 
       <Text style={{ color: tokens.text2, fontSize: 11, textAlign: 'center', marginTop: 8, marginBottom: 24 }}>
-        Generated {todayStr} · RheumaTrack
+        {t('generated_via', { date: todayStr })}
       </Text>
     </ScrollView>
   );

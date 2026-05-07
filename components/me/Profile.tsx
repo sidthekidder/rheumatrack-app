@@ -26,6 +26,8 @@ import { useMedicines, usePatchPatient, usePatient } from '@/lib/queries';
 import { requestPermissions, scheduleAllReminders } from '@/lib/notifications';
 import { supabase } from '@/lib/supabase';
 import { useTheme, type ThemeMode } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
+import type { StringKey } from '@/lib/i18n/en';
 import DoctorSection from './DoctorSection';
 import LanguageToggle from './LanguageToggle';
 import QRPlaceholder from './QRPlaceholder';
@@ -41,16 +43,17 @@ interface ProfileForm {
 
 const THEME_OPTIONS: ReadonlyArray<{
   id: ThemeMode;
-  label: string;
+  labelKey: StringKey;
   Icon: typeof Sun;
 }> = [
-  { id: 'light', label: 'Light', Icon: Sun },
-  { id: 'dark', label: 'Dark', Icon: Moon },
-  { id: 'system', label: 'System', Icon: Monitor },
+  { id: 'light', labelKey: 'me_theme_light', Icon: Sun },
+  { id: 'dark', labelKey: 'me_theme_dark', Icon: Moon },
+  { id: 'system', labelKey: 'me_theme_system', Icon: Monitor },
 ];
 
 export default function Profile() {
   const { tokens, mode, setMode } = useTheme();
+  const t = useT();
   const patientQ = usePatient();
   const patchPatient = usePatchPatient();
   const medsQ = useMedicines();
@@ -98,7 +101,7 @@ export default function Profile() {
     const ageTrim = pF.age.trim();
     const ageNum = ageTrim === '' ? null : Number(ageTrim);
     if (ageTrim !== '' && (!Number.isFinite(ageNum) || ageNum! < 0)) {
-      Alert.alert('Invalid age', 'Please enter a valid age.');
+      Alert.alert(t('me_invalid_age'), t('me_valid_age_hint'));
       return;
     }
     try {
@@ -113,7 +116,7 @@ export default function Profile() {
       setEditP(false);
     } catch (err) {
       Alert.alert(
-        'Could not save',
+        t('could_not_save'),
         err instanceof Error ? err.message : 'Unknown error',
       );
     }
@@ -125,8 +128,8 @@ export default function Profile() {
       setNotifGranted(granted);
       if (!granted) {
         Alert.alert(
-          'Notifications blocked',
-          'Enable notifications in your system settings to receive reminders.',
+          t('me_notif_blocked'),
+          t('me_notif_blocked_hint'),
         );
         return;
       }
@@ -134,8 +137,8 @@ export default function Profile() {
       await scheduleAllReminders(medsQ.data ?? []);
     } catch {
       Alert.alert(
-        'Not supported',
-        'Notifications cannot be enabled on this device.',
+        t('me_notif_not_supported'),
+        t('me_notif_unsupported_hint'),
       );
     }
   };
@@ -151,7 +154,7 @@ export default function Profile() {
       await supabase.auth.signOut();
     } catch (err) {
       Alert.alert(
-        'Sign out failed',
+        t('me_sign_out_failed'),
         err instanceof Error ? err.message : 'Unknown error',
       );
     }
@@ -168,7 +171,7 @@ export default function Profile() {
   if (!patient) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ color: tokens.text2 }}>Loading...</Text>
+        <Text style={{ color: tokens.text2 }}>{t('loading')}</Text>
       </View>
     );
   }
@@ -204,7 +207,7 @@ export default function Profile() {
       >
         <View style={{ padding: 13 }}>
           {/* My Profile */}
-          <Section title="My Profile" tokens={tokens}>
+          <Section title={t('my_profile')} tokens={tokens}>
             {!editP ? (
               <View>
                 <View
@@ -283,7 +286,7 @@ export default function Profile() {
                       color: tokens.text,
                     }}
                   >
-                    ✏️ Edit Profile
+                    {t('edit_profile')}
                   </Text>
                 </Pressable>
               </View>
@@ -292,7 +295,7 @@ export default function Profile() {
                 <TextInput
                   value={pF.name}
                   onChangeText={(v) => setPF({ ...pF, name: v })}
-                  placeholder="Name"
+                  placeholder={t('full_name')}
                   placeholderTextColor={tokens.text2}
                   style={inputStyle}
                 />
@@ -302,7 +305,7 @@ export default function Profile() {
                     onChangeText={(v) =>
                       setPF({ ...pF, age: v.replace(/[^0-9]/g, '') })
                     }
-                    placeholder="Age"
+                    placeholder={t('age')}
                     placeholderTextColor={tokens.text2}
                     keyboardType="numeric"
                     style={[inputStyle, { flex: 1 }]}
@@ -310,7 +313,7 @@ export default function Profile() {
                   <TextInput
                     value={pF.patientId}
                     onChangeText={(v) => setPF({ ...pF, patientId: v })}
-                    placeholder="Patient ID"
+                    placeholder={t('patient_id')}
                     placeholderTextColor={tokens.text2}
                     style={[inputStyle, { flex: 1 }]}
                   />
@@ -318,7 +321,7 @@ export default function Profile() {
                 <TextInput
                   value={pF.city}
                   onChangeText={(v) => setPF({ ...pF, city: v })}
-                  placeholder="City"
+                  placeholder={t('city')}
                   placeholderTextColor={tokens.text2}
                   style={inputStyle}
                 />
@@ -326,14 +329,14 @@ export default function Profile() {
                   <TextInput
                     value={pF.state}
                     onChangeText={(v) => setPF({ ...pF, state: v })}
-                    placeholder="State"
+                    placeholder={t('state')}
                     placeholderTextColor={tokens.text2}
                     style={[inputStyle, { flex: 1 }]}
                   />
                   <TextInput
                     value={pF.country}
                     onChangeText={(v) => setPF({ ...pF, country: v })}
-                    placeholder="Country"
+                    placeholder={t('country')}
                     placeholderTextColor={tokens.text2}
                     style={[inputStyle, { flex: 1 }]}
                   />
@@ -352,16 +355,16 @@ export default function Profile() {
           <DoctorSection />
 
           {/* Theme */}
-          <Section title="Theme" tokens={tokens}>
+          <Section title={t('appearance')} tokens={tokens}>
             <View style={{ flexDirection: 'row', gap: 8 }}>
-              {THEME_OPTIONS.map(({ id, label, Icon }) => {
+              {THEME_OPTIONS.map(({ id, labelKey, Icon }) => {
                 const selected = mode === id;
                 return (
                   <Pressable
                     key={id}
                     accessibilityRole="button"
                     accessibilityState={{ selected }}
-                    accessibilityLabel={label}
+                    accessibilityLabel={t(labelKey)}
                     onPress={() => setMode(id)}
                     style={{
                       flex: 1,
@@ -386,7 +389,7 @@ export default function Profile() {
                         color: selected ? 'white' : tokens.text2,
                       }}
                     >
-                      {label}
+                      {t(labelKey)}
                     </Text>
                   </Pressable>
                 );
@@ -395,7 +398,7 @@ export default function Profile() {
           </Section>
 
           {/* Reminders */}
-          <Section title="Reminders" tokens={tokens}>
+          <Section title={t('reminders')} tokens={tokens}>
             <View
               style={{
                 flexDirection: 'row',
@@ -427,7 +430,7 @@ export default function Profile() {
                     fontSize: 14,
                   }}
                 >
-                  {notifGranted ? 'Enabled' : 'Tap Enable'}
+                  {notifGranted ? t('me_enabled') : t('me_tap_enable')}
                 </Text>
                 <Text
                   style={{
@@ -437,13 +440,13 @@ export default function Profile() {
                     marginTop: 1,
                   }}
                 >
-                  Notifications required for reminders to work
+                  {t('me_notif_required')}
                 </Text>
               </View>
               {!notifGranted ? (
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Enable notifications"
+                  accessibilityLabel={t('enable')}
                   onPress={requestNotif}
                   style={{
                     backgroundColor: '#0D9488',
@@ -459,7 +462,7 @@ export default function Profile() {
                       fontSize: 13,
                     }}
                   >
-                    Enable
+                    {t('enable')}
                   </Text>
                 </Pressable>
               ) : null}
@@ -483,7 +486,7 @@ export default function Profile() {
                   marginBottom: 4,
                 }}
               >
-                🚨 Emergency
+                {`🚨 ${t('emergency')}`}
               </Text>
               <Text
                 style={{
@@ -492,11 +495,11 @@ export default function Profile() {
                   marginBottom: 11,
                 }}
               >
-                For medical emergencies, call 112
+                {t('emergency_sub')}
               </Text>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Call 112"
+                accessibilityLabel={t('call_112')}
                 onPress={callEmergency}
                 style={{
                   backgroundColor: '#EF4444',
@@ -513,7 +516,7 @@ export default function Profile() {
                     fontSize: 15,
                   }}
                 >
-                  📞 Call 112
+                  {t('call_112')}
                 </Text>
               </Pressable>
             </View>
@@ -522,7 +525,7 @@ export default function Profile() {
           {/* Sign out */}
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Sign out"
+            accessibilityLabel={t('me_sign_out')}
             onPress={signOut}
             style={{
               backgroundColor: tokens.card2,
@@ -541,7 +544,7 @@ export default function Profile() {
                 fontSize: 15,
               }}
             >
-              Sign out
+              {t('me_sign_out')}
             </Text>
           </Pressable>
 
@@ -555,7 +558,7 @@ export default function Profile() {
                 textAlign: 'center',
               }}
             >
-              RheumaTrack v1.0 · Made for Rheumatology patients ❤️
+              {t('me_footer')}
             </Text>
           </View>
         </View>

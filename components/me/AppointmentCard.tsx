@@ -6,6 +6,7 @@ import { useDeleteAppointment, usePatchAppointment } from '@/lib/queries';
 import type { Appointment } from '@/lib/api';
 import { today } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 interface Props {
   appt: Appointment;
@@ -13,6 +14,7 @@ interface Props {
 
 export default function AppointmentCard({ appt }: Props) {
   const { tokens } = useTheme();
+  const t = useT();
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [postNotesDraft, setPostNotesDraft] = useState(appt.postNotes ?? '');
@@ -29,9 +31,9 @@ export default function AppointmentCard({ appt }: Props) {
     patchMutation.mutate({ id: appt.id, body: { postNotes: postNotesDraft } });
   };
   const onDelete = () => {
-    Alert.alert('Delete appointment?', 'This cannot be undone.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => deleteMutation.mutate(appt.id) },
+    Alert.alert(t('delete_appt_confirm'), t('delete_cannot_undo'), [
+      { text: t('cancel'), style: 'cancel' },
+      { text: t('delete'), style: 'destructive', onPress: () => deleteMutation.mutate(appt.id) },
     ]);
   };
   const onEdit = () => router.push(`/appointments/edit/${appt.id}` as never);
@@ -65,14 +67,14 @@ export default function AppointmentCard({ appt }: Props) {
         <View style={{ marginTop: 12, gap: 10 }}>
           {appt.preNotes ? (
             <View>
-              <Text style={{ color: tokens.text2, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>Pre-visit notes</Text>
+              <Text style={{ color: tokens.text2, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('pre_visit_notes')}</Text>
               <Text style={{ color: tokens.text, fontSize: 13, marginTop: 2 }}>{appt.preNotes}</Text>
             </View>
           ) : null}
 
           {(isComplete || isPastDue) ? (
             <View>
-              <Text style={{ color: tokens.text2, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>Post-visit notes</Text>
+              <Text style={{ color: tokens.text2, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('post_visit_notes')}</Text>
               {appt.postNotes && !isPastDue ? (
                 <Text style={{ color: tokens.text, fontSize: 13, marginTop: 2 }}>{appt.postNotes}</Text>
               ) : (
@@ -80,7 +82,7 @@ export default function AppointmentCard({ appt }: Props) {
                   <TextInput
                     value={postNotesDraft}
                     onChangeText={setPostNotesDraft}
-                    placeholder="What did the doctor say?"
+                    placeholder={t('what_doctor_said')}
                     placeholderTextColor={tokens.text2}
                     multiline
                     style={{ flex: 1, color: tokens.text, backgroundColor: tokens.input, borderRadius: 8, padding: 10, minHeight: 60 }}
@@ -89,7 +91,7 @@ export default function AppointmentCard({ appt }: Props) {
                     onPress={onSavePostNotes}
                     style={{ backgroundColor: '#0D9488', borderRadius: 8, paddingHorizontal: 12, justifyContent: 'center' }}
                   >
-                    <Text style={{ color: 'white', fontWeight: '700' }}>Save</Text>
+                    <Text style={{ color: 'white', fontWeight: '700' }}>{t('save')}</Text>
                   </Pressable>
                 </View>
               )}
@@ -99,17 +101,17 @@ export default function AppointmentCard({ appt }: Props) {
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
             <Pressable onPress={onEdit} style={btnStyle('#3B82F6')}>
               <Pencil color="white" size={14} />
-              <Text style={btnTextStyle}>Edit</Text>
+              <Text style={btnTextStyle}>{t('edit')}</Text>
             </Pressable>
             {isPastDue ? (
               <Pressable onPress={onComplete} style={btnStyle('#0D9488')}>
                 <Check color="white" size={14} />
-                <Text style={btnTextStyle}>Complete</Text>
+                <Text style={btnTextStyle}>{t('complete')}</Text>
               </Pressable>
             ) : null}
             <Pressable onPress={onDelete} style={btnStyle('#FEE2E2')}>
               <Trash2 color="#DC2626" size={14} />
-              <Text style={{ ...btnTextStyle, color: '#DC2626' }}>Delete</Text>
+              <Text style={{ ...btnTextStyle, color: '#DC2626' }}>{t('delete')}</Text>
             </Pressable>
           </View>
         </View>

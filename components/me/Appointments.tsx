@@ -7,9 +7,11 @@ import { useAppointments } from '@/lib/queries';
 import type { Appointment } from '@/lib/api';
 import { today } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 export default function Appointments() {
   const { tokens } = useTheme();
+  const t = useT();
   const router = useRouter();
   const apptsQ = useAppointments();
   const todayStr = today();
@@ -38,19 +40,19 @@ export default function Appointments() {
   return (
     <View style={{ flex: 1, backgroundColor: tokens.bg }}>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }}>
-        <SectionHeader>Upcoming</SectionHeader>
+        <SectionHeader>{t('upcoming')}</SectionHeader>
         {upcoming.length === 0 ? (
           <Text style={{ color: tokens.text2, paddingVertical: 12, fontSize: 13 }}>
-            No upcoming appointments. Tap + to schedule one.
+            {t('no_upcoming')}
           </Text>
         ) : (
           upcoming.map((a) => <AppointmentCard key={a.id} appt={a} />)
         )}
 
-        <SectionHeader>Past</SectionHeader>
+        <SectionHeader>{t('past')}</SectionHeader>
         {past.length === 0 ? (
           <Text style={{ color: tokens.text2, paddingVertical: 12, fontSize: 13 }}>
-            No past appointments yet.
+            {t('no_past')}
           </Text>
         ) : (
           past.map((a) => <AppointmentCard key={a.id} appt={a} />)
