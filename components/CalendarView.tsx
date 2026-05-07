@@ -14,6 +14,7 @@ import type { MedicationLogEntry } from '@/lib/api';
 import { useMedicationLog, useMedicines } from '@/lib/queries';
 import { getDayCompliance, today } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 interface MonthView {
   year: number;
@@ -24,6 +25,7 @@ const pad2 = (n: number): string => String(n).padStart(2, '0');
 
 export default function CalendarView() {
   const { tokens } = useTheme();
+  const t = useT();
 
   const [view, setView] = useState<MonthView>(() => {
     const d = new Date();
@@ -165,7 +167,7 @@ export default function CalendarView() {
             <Text style={{
               fontWeight: '800', color: tokens.text2, fontSize: 11, marginBottom: 9,
               textTransform: 'uppercase', letterSpacing: 0.5,
-            }}>Monthly Compliance</Text>
+            }}>{t('monthly_compliance')}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 11 }}>
               <View style={{
                 backgroundColor: complianceBg, borderRadius: 50, width: 64, height: 64,
@@ -174,9 +176,9 @@ export default function CalendarView() {
                 <Text style={{ color: 'white', fontWeight: '900', fontSize: 18 }}>{compliance}%</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <ComplianceLine color="#16A34A" label="All taken" days={greenDays} text={tokens.text} />
-                <ComplianceLine color="#F59E0B" label="Some missed" days={yellowDays} text={tokens.text} />
-                <ComplianceLine color="#EF4444" label="None taken" days={redDays} text={tokens.text} last />
+                <ComplianceLine color="#16A34A" label={t('all_taken')} days={greenDays} text={tokens.text} />
+                <ComplianceLine color="#F59E0B" label={t('some_missed')} days={yellowDays} text={tokens.text} />
+                <ComplianceLine color="#EF4444" label={t('none_taken')} days={redDays} text={tokens.text} last />
               </View>
             </View>
           </View>
@@ -185,10 +187,10 @@ export default function CalendarView() {
         <View style={{
           flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 7, marginBottom: 11,
         }}>
-          <LegendChip color="#16A34A" label="All taken" />
-          <LegendChip color="#F59E0B" label="Some missed" />
-          <LegendChip color="#EF4444" label="None taken" />
-          <LegendChip color={tokens.card2} label="No meds" borderColor={tokens.border} />
+          <LegendChip color="#16A34A" label={t('all_taken')} />
+          <LegendChip color="#F59E0B" label={t('some_missed')} />
+          <LegendChip color="#EF4444" label={t('none_taken')} />
+          <LegendChip color={tokens.card2} label={t('no_meds_legend')} borderColor={tokens.border} />
         </View>
 
         <MonthGrid cells={cells} onDayPress={setSelectedDay} />
@@ -207,13 +209,14 @@ export default function CalendarView() {
 function ComplianceLine({
   color, label, days, text, last,
 }: { color: string; label: string; days: number; text: string; last?: boolean }) {
+  const t = useT();
   return (
     <View style={{
       flexDirection: 'row', justifyContent: 'space-between', marginBottom: last ? 0 : 3,
     }}>
       <Text style={{ color, fontWeight: '700', fontSize: 13 }}>{label}</Text>
       <Text style={{ fontWeight: '700', color: text, fontSize: 13 }}>
-        {days} {days === 1 ? 'day' : 'days'}
+        {days} {t('days')}
       </Text>
     </View>
   );

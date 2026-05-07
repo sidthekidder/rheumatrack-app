@@ -5,6 +5,7 @@ import LineGraph from '@/components/charts/LineGraph';
 import type { LabTest } from '@/constants/labs';
 import { flagBg, flagClr, flagLbl, flagVal } from '@/constants/labs';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 interface Props {
   test: LabTest;
@@ -14,6 +15,7 @@ interface Props {
 
 export default function LabRow({ test, latestValue, history }: Props) {
   const { tokens } = useTheme();
+  const t = useT();
   const [expanded, setExpanded] = useState(false);
   const flag = latestValue ? flagVal(test, latestValue) : 'none';
 
@@ -53,7 +55,7 @@ export default function LabRow({ test, latestValue, history }: Props) {
       </View>
       {test.nMin != null && test.nMax != null ? (
         <Text style={{ color: tokens.text2, fontSize: 11, marginTop: 2 }}>
-          Normal: {test.nMin}–{test.nMax}{test.unit ? ` ${test.unit}` : ''}
+          {t('normal_range_label')} {test.nMin}–{test.nMax}{test.unit ? ` ${test.unit}` : ''}
         </Text>
       ) : null}
       {expanded ? (

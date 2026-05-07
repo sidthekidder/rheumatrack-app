@@ -2,9 +2,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { TopTabs } from '@/lib/topTabs';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 export default function RecordsLayout() {
   const { tokens } = useTheme();
+  const t = useT();
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={{ flex: 1, backgroundColor: tokens.bg }}>
       <StatusBar style="dark" />
@@ -17,9 +19,9 @@ export default function RecordsLayout() {
           tabBarInactiveTintColor: tokens.text2,
         }}
       >
-        <TopTabs.Screen name="index" options={{ title: '📅 Calendar' }} />
-        <TopTabs.Screen name="diary" options={{ title: '📔 Diary' }} />
-        <TopTabs.Screen name="labs" options={{ title: '🧪 Labs' }} />
+        <TopTabs.Screen name="index" options={{ title: `📅 ${t('records_cal')}` }} />
+        <TopTabs.Screen name="diary" options={{ title: `📔 ${t('records_diary')}` }} />
+        <TopTabs.Screen name="labs" options={{ title: `🧪 ${t('records_labs')}` }} />
       </TopTabs>
     </SafeAreaView>
   );

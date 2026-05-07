@@ -21,6 +21,7 @@ import {
 import type { LabReport, LabResultEntry, UploadFile } from '@/lib/api';
 import { today } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 import LabRow from '@/components/LabRow';
 
 type Screen =
@@ -41,6 +42,7 @@ async function buildUploadFile(file: SelectedFile): Promise<UploadFile> {
 
 export default function LabsView() {
   const { tokens } = useTheme();
+  const t = useT();
   const [screen, setScreen] = useState<Screen>({ kind: 'dash' });
 
   const reportsQ = useLabReports();
@@ -104,7 +106,7 @@ export default function LabsView() {
               padding: 11, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
             }}>
             <Camera size={15} color="white" />
-            <Text style={{ color: 'white', fontWeight: '800', fontSize: 13 }}>Scan Report</Text>
+            <Text style={{ color: 'white', fontWeight: '800', fontSize: 13 }}>{t('scan_lab_report')}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -115,7 +117,7 @@ export default function LabsView() {
               borderWidth: 2, borderColor: tokens.border,
             }}>
             <Plus size={15} color="#0D9488" />
-            <Text style={{ color: '#0D9488', fontWeight: '800', fontSize: 13 }}>Add Manual</Text>
+            <Text style={{ color: '#0D9488', fontWeight: '800', fontSize: 13 }}>{t('add_manually')}</Text>
           </Pressable>
         </View>
 
@@ -129,16 +131,16 @@ export default function LabsView() {
           <View style={{ alignItems: 'center', padding: 40 }}>
             <Text style={{ fontSize: 46, marginBottom: 10 }}>🧪</Text>
             <Text style={{ fontSize: 16, fontWeight: '800', color: tokens.text2, marginBottom: 6 }}>
-              No lab reports yet
+              {t('no_labs_yet')}
             </Text>
             <Text style={{ fontSize: 13, color: tokens.text2, textAlign: 'center', marginBottom: 14 }}>
-              Scan a lab report or add manually
+              {t('scan_or_add_manual')}
             </Text>
             <Pressable
               accessibilityRole="button"
               onPress={() => setScreen({ kind: 'addManual' })}
               style={{ backgroundColor: '#0D9488', borderRadius: 12, paddingHorizontal: 20, paddingVertical: 11 }}>
-              <Text style={{ color: 'white', fontWeight: '800', fontSize: 14 }}>+ Add Results</Text>
+              <Text style={{ color: 'white', fontWeight: '800', fontSize: 14 }}>{t('add_results')}</Text>
             </Pressable>
           </View>
         ) : null}
@@ -149,7 +151,7 @@ export default function LabsView() {
             borderWidth: 2, borderColor: '#FCA5A5',
           }}>
             <Text style={{ fontWeight: '800', color: '#991B1B', fontSize: 12, marginBottom: 7 }}>
-              ⚠️ Abnormal — Share with your doctor
+              ⚠️ {t('abnormal_labs')}
             </Text>
             {abnormal.map((t) => {
               const lv = latest[t.id];
@@ -203,6 +205,7 @@ function LabGraph({
   test, reports, onBack,
 }: { test: LabTest; reports: LabReport[]; onBack: () => void }) {
   const { tokens } = useTheme();
+  const t = useT();
   const readings = useMemo(
     () => [...reports]
       .sort((a, b) => (a.reportDate < b.reportDate ? -1 : 1))
@@ -249,7 +252,7 @@ function LabGraph({
             }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 7 }}>
                 <TrendingUp size={13} color="#0D9488" />
-                <Text style={{ fontWeight: '800', fontSize: 12, color: tokens.text }}>Trend</Text>
+                <Text style={{ fontWeight: '800', fontSize: 12, color: tokens.text }}>{t('trend')}</Text>
               </View>
               <LineGraph readings={readings} test={test} />
               {test.nMin !== null ? (
@@ -263,7 +266,7 @@ function LabGraph({
           <Text style={{
             fontWeight: '800', color: tokens.text2, fontSize: 10, marginBottom: 8,
             textTransform: 'uppercase', letterSpacing: 0.4,
-          }}>All Readings</Text>
+          }}>{t('all_readings')}</Text>
           {[...readings].sort((a, b) => (a.date < b.date ? 1 : -1)).map((r, i) => {
             const f = flagVal(test, r.value);
             return (
@@ -292,7 +295,7 @@ function LabGraph({
             <View style={{ alignItems: 'center', padding: 30 }}>
               <Text style={{ fontSize: 36 }}>📊</Text>
               <Text style={{ fontSize: 14, fontWeight: '700', color: tokens.text2, marginTop: 8 }}>
-                No readings yet
+                {t('no_readings_yet')}
               </Text>
             </View>
           ) : null}
@@ -382,6 +385,7 @@ function LineGraph({
 
 function AddLabManual({ onClose }: { onClose: () => void }) {
   const { tokens } = useTheme();
+  const t = useT();
   const create = useCreateLabReport();
   const [date, setDate] = useState(today());
   const [cat, setCat] = useState('CBC');
@@ -424,13 +428,13 @@ function AddLabManual({ onClose }: { onClose: () => void }) {
             }}>
             <ArrowLeft size={16} color="white" />
           </Pressable>
-          <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>Add Lab Results</Text>
+          <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>{t('add_lab_results')}</Text>
           <Text style={{ fontSize: 12, color: 'white', opacity: 0.85 }}>
-            Enter values from your report
+            {t('enter_values')}
           </Text>
         </View>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 13, paddingBottom: 30 }}>
-          <Lbl tokens={tokens}>Report Date</Lbl>
+          <Lbl tokens={tokens}>{t('report_date')}</Lbl>
           <TextInput
             value={date} onChangeText={setDate} placeholder="YYYY-MM-DD"
             placeholderTextColor={tokens.text2} style={inputStyle(tokens)}
@@ -443,7 +447,7 @@ function AddLabManual({ onClose }: { onClose: () => void }) {
           }}>
             <Search size={14} color={tokens.text2} />
             <TextInput
-              value={search} onChangeText={setSearch} placeholder="Search test..."
+              value={search} onChangeText={setSearch} placeholder={t('search_test')}
               placeholderTextColor={tokens.text2}
               style={{ flex: 1, fontSize: 13, color: tokens.text, fontWeight: '600' }}
             />
@@ -474,21 +478,21 @@ function AddLabManual({ onClose }: { onClose: () => void }) {
             ))}
           </ScrollView>
 
-          {tests.map((t) => {
-            const v = vals[t.id] || '';
-            const f = v ? flagVal(t, v) : null;
+          {tests.map((lt) => {
+            const v = vals[lt.id] || '';
+            const f = v ? flagVal(lt, v) : null;
             return (
-              <View key={t.id} style={{
+              <View key={lt.id} style={{
                 backgroundColor: tokens.card, borderRadius: 11, padding: 11, marginBottom: 7,
                 borderWidth: 2,
                 borderColor: f && f !== 'normal' && f !== 'qual' && f !== 'none' ? flagClr(f) : tokens.border,
               }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 7 }}>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontWeight: '800', fontSize: 13, color: tokens.text }}>{t.name}</Text>
+                    <Text style={{ fontWeight: '800', fontSize: 13, color: tokens.text }}>{lt.name}</Text>
                     <Text style={{ fontSize: 10, color: tokens.text2, fontWeight: '600' }}>
-                      {t.cat}{t.unit ? ` · ${t.unit}` : ''}
-                      {t.nMin !== null ? ` · Normal: ${t.nMin}–${t.nMax !== null && t.nMax < 999 ? t.nMax : '+'}` : ''}
+                      {lt.cat}{lt.unit ? ` · ${lt.unit}` : ''}
+                      {lt.nMin !== null ? ` · ${t('normal_range_label')} ${lt.nMin}–${lt.nMax !== null && lt.nMax < 999 ? lt.nMax : '+'}` : ''}
                     </Text>
                   </View>
                   {f ? (
@@ -500,12 +504,12 @@ function AddLabManual({ onClose }: { onClose: () => void }) {
                     </View>
                   ) : null}
                 </View>
-                {t.qualitative ? (
+                {lt.qualitative ? (
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 5 }}>
                     {QUAL_OPTS.map((opt) => (
                       <Pressable
                         key={opt} accessibilityRole="button"
-                        onPress={() => setVals({ ...vals, [t.id]: v === opt ? '' : opt })}
+                        onPress={() => setVals({ ...vals, [lt.id]: v === opt ? '' : opt })}
                         style={{
                           backgroundColor: v === opt ? '#8B5CF6' : tokens.card2,
                           borderWidth: 2, borderColor: v === opt ? '#8B5CF6' : tokens.border,
@@ -521,8 +525,8 @@ function AddLabManual({ onClose }: { onClose: () => void }) {
                 ) : (
                   <TextInput
                     value={v}
-                    onChangeText={(s) => setVals({ ...vals, [t.id]: s })}
-                    placeholder={`Value${t.unit ? ` (${t.unit})` : ''}...`}
+                    onChangeText={(s) => setVals({ ...vals, [lt.id]: s })}
+                    placeholder={`Value${lt.unit ? ` (${lt.unit})` : ''}...`}
                     placeholderTextColor={tokens.text2}
                     keyboardType="decimal-pad"
                     style={{
@@ -536,7 +540,7 @@ function AddLabManual({ onClose }: { onClose: () => void }) {
             );
           })}
 
-          <Lbl tokens={tokens}>Notes (optional)</Lbl>
+          <Lbl tokens={tokens}>{t('notes')}</Lbl>
           <TextInput
             value={notes} onChangeText={setNotes}
             placeholder="e.g. Fasting sample, Metropolis lab..."
@@ -555,7 +559,7 @@ function AddLabManual({ onClose }: { onClose: () => void }) {
               flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7,
             }}>
             {create.isPending ? <Loader2 size={16} color="white" /> : null}
-            <Text style={{ color: 'white', fontWeight: '900', fontSize: 16 }}>💾 Save Report</Text>
+            <Text style={{ color: 'white', fontWeight: '900', fontSize: 16 }}>{t('save_lab_report_btn')}</Text>
           </Pressable>
         </ScrollView>
       </View>
@@ -567,6 +571,7 @@ function AddLabManual({ onClose }: { onClose: () => void }) {
 
 function ScanLab({ onClose }: { onClose: () => void }) {
   const { tokens } = useTheme();
+  const t = useT();
   const scan = useScanLabReport();
   const create = useCreateLabReport();
 
@@ -584,7 +589,7 @@ function ScanLab({ onClose }: { onClose: () => void }) {
         ? { granted: true }
         : await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert('Permission needed', 'Please grant access to scan a lab report.');
+      Alert.alert(t('permission_needed'), t('permission_grant_scan'));
       return;
     }
     const result = fromCamera
@@ -655,9 +660,9 @@ function ScanLab({ onClose }: { onClose: () => void }) {
             }}>
             <ArrowLeft size={16} color="white" />
           </Pressable>
-          <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>Scan Lab Report</Text>
+          <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>{t('scan_lab_report')}</Text>
           <Text style={{ fontSize: 12, color: 'white', opacity: 0.85 }}>
-            AI extracts all values automatically
+            {t('ai_extracts_auto')}
           </Text>
         </View>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 13, paddingBottom: 30 }}>
@@ -676,10 +681,10 @@ function ScanLab({ onClose }: { onClose: () => void }) {
                   <>
                     <Text style={{ fontSize: 36, marginBottom: 7 }}>🧪</Text>
                     <Text style={{ fontSize: 14, fontWeight: '800', color: tokens.text }}>
-                      Upload Lab Report
+                      {t('upload_lab_report')}
                     </Text>
                     <Text style={{ fontSize: 11, color: tokens.text2, marginTop: 3 }}>
-                      Photo or PDF from WhatsApp / gallery
+                      {t('photo_or_pdf_hint')}
                     </Text>
                   </>
                 )}
@@ -711,7 +716,7 @@ function ScanLab({ onClose }: { onClose: () => void }) {
                     marginBottom: 10,
                   }}>
                   <Sparkles size={15} color="white" />
-                  <Text style={{ color: 'white', fontWeight: '800', fontSize: 14 }}>Read Report</Text>
+                  <Text style={{ color: 'white', fontWeight: '800', fontSize: 14 }}>{t('read_report')}</Text>
                 </Pressable>
               ) : null}
 
@@ -722,7 +727,7 @@ function ScanLab({ onClose }: { onClose: () => void }) {
                 }}>
                   <ActivityIndicator size="large" color="#0D9488" />
                   <Text style={{ fontWeight: '800', fontSize: 14, color: tokens.text, marginTop: 8 }}>
-                    Reading lab report...
+                    {t('reading_lab_report')}
                   </Text>
                 </View>
               ) : null}
@@ -734,7 +739,7 @@ function ScanLab({ onClose }: { onClose: () => void }) {
                 }}>
                   <AlertTriangle size={20} color="#EF4444" />
                   <Text style={{ fontWeight: '800', color: '#991B1B', fontSize: 13, marginTop: 6 }}>
-                    Could not read report
+                    {t('could_not_read_report')}
                   </Text>
                   <Text style={{ color: '#DC2626', fontSize: 11, marginTop: 3, textAlign: 'center' }}>
                     {error}
@@ -750,10 +755,10 @@ function ScanLab({ onClose }: { onClose: () => void }) {
               }}>
                 <Sparkles size={16} color="white" />
                 <Text style={{ color: 'white', fontWeight: '800', fontSize: 14 }}>
-                  Found {extracted.results.length} tests
+                  {t('found_tests', { n: extracted.results.length })}
                 </Text>
               </View>
-              <Lbl tokens={tokens}>Report Date</Lbl>
+              <Lbl tokens={tokens}>{t('report_date')}</Lbl>
               <TextInput
                 value={date} onChangeText={setDate} placeholder="YYYY-MM-DD"
                 placeholderTextColor={tokens.text2}
@@ -813,7 +818,7 @@ function ScanLab({ onClose }: { onClose: () => void }) {
                 }}>
                 {create.isPending ? <Loader2 size={16} color="white" /> : null}
                 <Text style={{ color: 'white', fontWeight: '900', fontSize: 15 }}>
-                  ✅ Save Lab Report
+                  {t('save_lab_report_final')}
                 </Text>
               </Pressable>
             </>
