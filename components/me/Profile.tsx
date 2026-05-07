@@ -16,19 +16,19 @@ import * as Notifications from 'expo-notifications';
 import {
   Bell,
   BellOff,
-  MessageCircle,
   Monitor,
   Moon,
-  Stethoscope,
   Sun,
   User,
 } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { useMedicines, usePatchPatient, usePatient } from '@/lib/queries';
 import { requestPermissions, scheduleAllReminders } from '@/lib/notifications';
-import { waPhone } from '@/lib/schedule';
 import { supabase } from '@/lib/supabase';
 import { useTheme, type ThemeMode } from '@/lib/themeStore';
+import DoctorSection from './DoctorSection';
+import LanguageToggle from './LanguageToggle';
+import QRPlaceholder from './QRPlaceholder';
 
 interface ProfileForm {
   name: string;
@@ -37,12 +37,6 @@ interface ProfileForm {
   city: string;
   state: string;
   country: string;
-}
-
-interface DoctorForm {
-  name: string;
-  phone: string;
-  hospital: string;
 }
 
 const THEME_OPTIONS: ReadonlyArray<{
@@ -63,7 +57,6 @@ export default function Profile() {
   const patient = patientQ.data ?? null;
 
   const [editP, setEditP] = useState(false);
-  const [editD, setEditD] = useState(false);
   const [pF, setPF] = useState<ProfileForm>({
     name: '',
     age: '',
@@ -71,11 +64,6 @@ export default function Profile() {
     city: '',
     state: '',
     country: 'India',
-  });
-  const [dF, setDF] = useState<DoctorForm>({
-    name: '',
-    phone: '',
-    hospital: '',
   });
   const [notifGranted, setNotifGranted] = useState(false);
 
@@ -106,15 +94,6 @@ export default function Profile() {
     setEditP(true);
   };
 
-  const openDoctorEdit = () => {
-    setDF({
-      name: patient?.doctorName ?? '',
-      phone: patient?.doctorPhone ?? '',
-      hospital: patient?.doctorHospital ?? '',
-    });
-    setEditD(true);
-  };
-
   const saveProfile = async () => {
     const ageTrim = pF.age.trim();
     const ageNum = ageTrim === '' ? null : Number(ageTrim);
@@ -132,23 +111,6 @@ export default function Profile() {
         country: pF.country.trim() || null,
       });
       setEditP(false);
-    } catch (err) {
-      Alert.alert(
-        'Could not save',
-        err instanceof Error ? err.message : 'Unknown error',
-      );
-    }
-  };
-
-  const saveDoctor = async () => {
-    try {
-      await patchPatient.mutateAsync({
-        doctorName: dF.name.trim() || null,
-        doctorSpecialty: 'Rheumatologist',
-        doctorPhone: dF.phone.replace(/\D/g, '') || null,
-        doctorHospital: dF.hospital.trim() || null,
-      });
-      setEditD(false);
     } catch (err) {
       Alert.alert(
         'Could not save',
@@ -182,15 +144,6 @@ export default function Profile() {
     Linking.openURL('tel:112').catch(() => {
       /* noop */
     });
-  };
-
-  const openWhatsApp = () => {
-    if (!patient?.doctorPhone) return;
-    Linking.openURL(`https://wa.me/${waPhone(patient.doctorPhone)}`).catch(
-      () => {
-        /* noop */
-      },
-    );
   };
 
   const signOut = async () => {
@@ -396,199 +349,7 @@ export default function Profile() {
           </Section>
 
           {/* Doctor Contact */}
-          <Section title="Doctor Contact" tokens={tokens}>
-            {!editD ? (
-              patient.doctorName ? (
-                <View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 9,
-                      marginBottom: 11,
-                    }}
-                  >
-                    <LinearGradient
-                      colors={['#0D9488', '#0284C7']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={{
-                        width: 46,
-                        height: 46,
-                        borderRadius: 12,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Stethoscope size={21} color="white" />
-                    </LinearGradient>
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        style={{
-                          fontWeight: '800',
-                          fontSize: 16,
-                          color: tokens.text,
-                        }}
-                      >
-                        {patient.doctorName}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 13,
-                          color: tokens.text2,
-                          fontWeight: '600',
-                        }}
-                      >
-                        {patient.doctorSpecialty || 'Rheumatologist'}
-                      </Text>
-                      {patient.doctorHospital ? (
-                        <Text
-                          style={{ fontSize: 12, color: tokens.text2 }}
-                        >
-                          {patient.doctorHospital}
-                        </Text>
-                      ) : null}
-                    </View>
-                  </View>
-                  {patient.doctorPhone ? (
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel="Chat on WhatsApp"
-                      onPress={openWhatsApp}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 8,
-                        backgroundColor: '#25D366',
-                        borderRadius: 11,
-                        paddingVertical: 11,
-                        marginBottom: 9,
-                      }}
-                    >
-                      <MessageCircle size={19} color="white" />
-                      <Text
-                        style={{
-                          color: 'white',
-                          fontWeight: '800',
-                          fontSize: 15,
-                        }}
-                      >
-                        Chat on WhatsApp
-                      </Text>
-                    </Pressable>
-                  ) : null}
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Edit doctor"
-                    onPress={openDoctorEdit}
-                    style={{
-                      backgroundColor: tokens.card2,
-                      borderWidth: 2,
-                      borderColor: tokens.border,
-                      borderRadius: 9,
-                      paddingVertical: 9,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontWeight: '700',
-                        fontSize: 14,
-                        color: tokens.text,
-                      }}
-                    >
-                      ✏️ Edit Doctor
-                    </Text>
-                  </Pressable>
-                </View>
-              ) : (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Add doctor"
-                  onPress={openDoctorEdit}
-                  style={{
-                    backgroundColor: tokens.card2,
-                    borderWidth: 2,
-                    borderColor: tokens.border,
-                    borderRadius: 9,
-                    paddingVertical: 11,
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontWeight: '700',
-                      fontSize: 14,
-                      color: tokens.text2,
-                    }}
-                  >
-                    + Add Doctor
-                  </Text>
-                </Pressable>
-              )
-            ) : (
-              <View>
-                <TextInput
-                  value={dF.name}
-                  onChangeText={(v) => setDF({ ...dF, name: v })}
-                  placeholder="Doctor's name"
-                  placeholderTextColor={tokens.text2}
-                  style={inputStyle}
-                />
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    gap: 8,
-                    marginBottom: 11,
-                    alignItems: 'center',
-                  }}
-                >
-                  <View
-                    style={{
-                      backgroundColor: tokens.card2,
-                      borderRadius: 9,
-                      paddingVertical: 11,
-                      paddingHorizontal: 12,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontWeight: '700',
-                        fontSize: 15,
-                        color: tokens.text2,
-                      }}
-                    >
-                      +91
-                    </Text>
-                  </View>
-                  <TextInput
-                    value={dF.phone}
-                    onChangeText={(v) =>
-                      setDF({ ...dF, phone: v.replace(/[^0-9]/g, '') })
-                    }
-                    placeholder="WhatsApp number"
-                    placeholderTextColor={tokens.text2}
-                    keyboardType="phone-pad"
-                    style={[inputStyle, { flex: 1, marginBottom: 0 }]}
-                  />
-                </View>
-                <TextInput
-                  value={dF.hospital}
-                  onChangeText={(v) => setDF({ ...dF, hospital: v })}
-                  placeholder="Hospital/Clinic"
-                  placeholderTextColor={tokens.text2}
-                  style={inputStyle}
-                />
-                <FormButtons
-                  tokens={tokens}
-                  saving={saving}
-                  onCancel={() => setEditD(false)}
-                  onSave={saveDoctor}
-                />
-              </View>
-            )}
-          </Section>
+          <DoctorSection />
 
           {/* Theme */}
           <Section title="Theme" tokens={tokens}>
@@ -704,6 +465,12 @@ export default function Profile() {
               ) : null}
             </View>
           </Section>
+
+          {/* Language */}
+          <LanguageToggle />
+
+          {/* QR Code */}
+          <QRPlaceholder />
 
           {/* Emergency */}
           <Section tokens={tokens}>
