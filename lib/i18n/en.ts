@@ -478,6 +478,12 @@ export const en = {
   anti_inflam_sub: 'Whole colourful foods, good oils, turmeric and ginger daily.',
   critical_warning_sub: 'Alcohol is ABSOLUTELY contraindicated on Methotrexate, Leflunomide and JAK inhibitors.',
   condition_diet_sub: "Tap your condition. Always follow your doctor's advice.",
+
+  // HealthCard v3.3 redesign
+  medicines_scheduled: '{n} medicines scheduled',
+  medicine_scheduled_singular: '1 medicine scheduled',
+  no_medicines_scheduled_today: 'No medicines scheduled today',
+  sends_health_card_hint: 'Sends name, medicines, compliance and abnormal labs — no typing needed',
 } as const;
 
 export type StringKey = keyof typeof en;

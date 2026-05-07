@@ -478,4 +478,10 @@ export const hi: Record<StringKey, string> = {
   anti_inflam_sub: 'Whole colourful foods, good oils, turmeric and ginger daily.',
   critical_warning_sub: 'Alcohol is ABSOLUTELY contraindicated on Methotrexate, Leflunomide and JAK inhibitors.',
   condition_diet_sub: "Tap your condition. Always follow your doctor's advice.",
+
+  // HealthCard v3.3 redesign
+  medicines_scheduled: '{n} दवाएँ निर्धारित',
+  medicine_scheduled_singular: '1 दवा निर्धारित',
+  no_medicines_scheduled_today: 'आज कोई दवा निर्धारित नहीं',
+  sends_health_card_hint: 'नाम, दवाएँ, अनुपालन और असामान्य लैब भेजता है — टाइप करने की ज़रूरत नहीं',
 };
