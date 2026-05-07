@@ -10,19 +10,21 @@ import { DIET, type DietItem, type DiseaseTip } from '@/constants/diet';
 import { EXERCISES, pickExerciseGroup } from '@/constants/exercises';
 import { usePatient } from '@/lib/queries';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 type Sub = 'eat' | 'avoid' | 'disease' | 'exercise';
 
-const SUBS: ReadonlyArray<{ id: Sub; em: string; lb: string }> = [
-  { id: 'eat', em: '🥗', lb: 'Eat' },
-  { id: 'avoid', em: '🚫', lb: 'Avoid' },
-  { id: 'disease', em: '🏥', lb: 'Disease' },
-  { id: 'exercise', em: '💪', lb: 'Exercise' },
-];
-
 export default function WellnessScreen() {
   const { tokens } = useTheme();
+  const t = useT();
   const [sub, setSub] = useState<Sub>('eat');
+
+  const SUBS: ReadonlyArray<{ id: Sub; em: string; lb: string }> = [
+    { id: 'eat', em: '🥗', lb: t('eat') },
+    { id: 'avoid', em: '🚫', lb: t('avoid') },
+    { id: 'disease', em: '🏥', lb: t('disease') },
+    { id: 'exercise', em: '💪', lb: t('exercise') },
+  ];
 
   const patientQ = usePatient();
   const diag = patientQ.data?.diagnosis ?? '';
@@ -37,12 +39,12 @@ export default function WellnessScreen() {
         style={{ paddingTop: 22, paddingHorizontal: 18, paddingBottom: 16 }}
       >
         <Text style={{ fontSize: 22, fontWeight: '900', color: 'white' }}>
-          {sub === 'exercise' ? '💪 Exercise Guide' : '🥗 Diet & Wellness'}
+          {sub === 'exercise' ? t('exercise_guide_header') : t('diet_wellness_header')}
         </Text>
         <Text style={{ fontSize: 13, color: 'white', opacity: 0.85, marginTop: 2 }}>
           {sub === 'exercise'
-            ? 'Evidence-based for Rheumatology patients'
-            : 'For Autoimmune & Inflammatory Conditions'}
+            ? t('exercise_guide_sub')
+            : t('diet_wellness_sub')}
         </Text>
       </LinearGradient>
 
@@ -86,6 +88,7 @@ export default function WellnessScreen() {
 
 function EatList({ items }: { items: DietItem[] }) {
   const { tokens } = useTheme();
+  const t = useT();
   const [open, setOpen] = useState<number | null>(null);
   return (
     <>
@@ -94,10 +97,10 @@ function EatList({ items }: { items: DietItem[] }) {
         borderWidth: 2, borderColor: '#86EFAC',
       }}>
         <Text style={{ fontWeight: '800', color: '#16A34A', fontSize: 12, marginBottom: 2 }}>
-          🌿 Anti-Inflammatory Principles
+          🌿 {t('anti_inflam')}
         </Text>
         <Text style={{ fontSize: 11, color: tokens.text2, lineHeight: 16 }}>
-          Whole colourful foods, good oils, turmeric and ginger daily.
+          {t('anti_inflam_sub')}
         </Text>
       </View>
       {items.map((item, i) => (
@@ -116,6 +119,7 @@ function EatList({ items }: { items: DietItem[] }) {
 
 function AvoidList({ items }: { items: DietItem[] }) {
   const { tokens } = useTheme();
+  const t = useT();
   const [open, setOpen] = useState<number | null>(null);
   return (
     <>
@@ -124,10 +128,10 @@ function AvoidList({ items }: { items: DietItem[] }) {
         borderWidth: 2, borderColor: '#FCA5A5',
       }}>
         <Text style={{ fontWeight: '800', color: '#EF4444', fontSize: 12, marginBottom: 2 }}>
-          ⚠️ Critical Warning
+          ⚠️ {t('critical_warning')}
         </Text>
         <Text style={{ fontSize: 11, color: tokens.text2, lineHeight: 16 }}>
-          Alcohol is ABSOLUTELY contraindicated on Methotrexate, Leflunomide and JAK inhibitors.
+          {t('critical_warning_sub')}
         </Text>
       </View>
       {items.map((item, i) => (
@@ -146,6 +150,7 @@ function AvoidList({ items }: { items: DietItem[] }) {
 
 function DiseaseList({ items }: { items: DiseaseTip[] }) {
   const { tokens } = useTheme();
+  const t = useT();
   const [open, setOpen] = useState<number | null>(null);
   return (
     <>
@@ -154,10 +159,10 @@ function DiseaseList({ items }: { items: DiseaseTip[] }) {
         borderWidth: 2, borderColor: tokens.border,
       }}>
         <Text style={{ fontWeight: '800', color: tokens.text, fontSize: 12, marginBottom: 2 }}>
-          🏥 Condition-Specific Diet
+          🏥 {t('condition_diet')}
         </Text>
         <Text style={{ fontSize: 11, color: tokens.text2, lineHeight: 16 }}>
-          Tap your condition. Always follow your doctor&apos;s advice.
+          {t('condition_diet_sub')}
         </Text>
       </View>
       {items.map((d, i) => {
@@ -210,6 +215,7 @@ function DiseaseList({ items }: { items: DiseaseTip[] }) {
 
 function ExerciseSection({ diag }: { diag: string }) {
   const { tokens } = useTheme();
+  const t = useT();
   const initial = useMemo(() => pickExerciseGroup(diag), [diag]);
   const [selEx, setSelEx] = useState(initial);
   const [openEx, setOpenEx] = useState<number | null>(null);
@@ -225,12 +231,12 @@ function ExerciseSection({ diag }: { diag: string }) {
         }}>
           <Activity size={13} color="#0D9488" />
           <Text style={{ fontSize: 12, fontWeight: '700', color: '#0D9488' }}>
-            Showing for: {diag}
+            {t('showing_for')} {diag}
           </Text>
         </View>
       ) : null}
       <Text style={{ fontWeight: '700', color: tokens.text2, fontSize: 11, marginBottom: 7 }}>
-        Select condition:
+        {t('select_condition')}
       </Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ gap: 5, paddingBottom: 7 }}
@@ -265,7 +271,7 @@ function ExerciseSection({ diag }: { diag: string }) {
         <View>
           <Text style={{ fontWeight: '900', fontSize: 15, color: 'white' }}>{ex.con}</Text>
           <Text style={{ fontSize: 11, color: 'white', opacity: 0.85, marginTop: 1 }}>
-            {ex.list.length} exercises
+            {ex.list.length} {t('exercises_list')}
           </Text>
         </View>
       </View>
@@ -313,7 +319,7 @@ function ExerciseSection({ diag }: { diag: string }) {
       <Text style={{
         fontWeight: '800', color: tokens.text2, fontSize: 10, marginBottom: 8,
         textTransform: 'uppercase', letterSpacing: 0.5,
-      }}>Exercises</Text>
+      }}>{t('exercises_list')}</Text>
       {ex.list.map((e, j) => {
         const isOpen = openEx === j;
         return (
