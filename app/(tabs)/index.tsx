@@ -19,8 +19,10 @@ import {
 } from '@/lib/queries';
 import { getMedsForDate, today } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 export default function HomeScreen() {
+  const t = useT();
   const router = useRouter();
   const { tokens } = useTheme();
 
@@ -114,7 +116,7 @@ export default function HomeScreen() {
         <View style={{ paddingTop: 13, paddingHorizontal: 13 }}>
           {hasError ? (
             <Text style={{ color: '#DC2626', fontSize: 13, fontWeight: '600', marginBottom: 10 }}>
-              Couldn't load some data. Pull to refresh.
+              {t('home_error')}
             </Text>
           ) : null}
 
@@ -130,7 +132,7 @@ export default function HomeScreen() {
                   textAlign: 'center',
                 }}
               >
-                No medicines added yet
+                {t('home_no_meds_heading')}
               </Text>
               <Text
                 style={{
@@ -141,7 +143,7 @@ export default function HomeScreen() {
                   marginBottom: 18,
                 }}
               >
-                Tap Scan to upload prescription, or add manually
+                {t('home_scan_subtitle')}
               </Text>
               <Pressable
                 accessibilityRole="button"
@@ -155,7 +157,7 @@ export default function HomeScreen() {
                 }}
               >
                 <Text style={{ color: 'white', fontWeight: '800', fontSize: 14 }}>
-                  📷 Scan Prescription
+                  {t('home_scan_btn')}
                 </Text>
               </Pressable>
             </View>
