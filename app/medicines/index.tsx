@@ -16,10 +16,12 @@ import { ArrowLeft } from 'lucide-react-native';
 import MedicineRow from '@/components/MedicineRow';
 import { useDeleteMedicine, useMedicines } from '@/lib/queries';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 export default function MedicinesScreen() {
   const router = useRouter();
   const { tokens } = useTheme();
+  const t = useT();
 
   const medsQ = useMedicines();
   const deleteMed = useDeleteMedicine();
@@ -80,7 +82,7 @@ export default function MedicinesScreen() {
           </Pressable>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 21, fontWeight: '900', color: 'white' }}>
-              My Medicines
+              {t('my_medicines')}
             </Text>
             <Text
               style={{
@@ -90,7 +92,7 @@ export default function MedicinesScreen() {
                 marginTop: 1,
               }}
             >
-              {meds.length} saved
+              {meds.length} {t('saved')}
             </Text>
           </View>
         </View>
@@ -106,7 +108,7 @@ export default function MedicinesScreen() {
           }}
         >
           <Text style={{ color: 'white', fontWeight: '800', fontSize: 15 }}>
-            + Add Manually
+            {t('add_manually_btn')}
           </Text>
         </Pressable>
       </LinearGradient>
@@ -154,7 +156,7 @@ export default function MedicinesScreen() {
                   marginBottom: 4,
                 }}
               >
-                No medicines yet
+                {t('no_meds_yet')}
               </Text>
               <Text
                 style={{
@@ -163,7 +165,7 @@ export default function MedicinesScreen() {
                   fontWeight: '600',
                 }}
               >
-                Tap + Add Manually above
+                {t('tap_add_manually')}
               </Text>
             </View>
           ) : (
@@ -218,7 +220,7 @@ export default function MedicinesScreen() {
                 textAlign: 'center',
               }}
             >
-              Remove Medicine?
+              {t('remove_medicine')}
             </Text>
             <Text
               style={{
@@ -228,7 +230,7 @@ export default function MedicinesScreen() {
                 textAlign: 'center',
               }}
             >
-              This medicine will be removed from your schedule.
+              {t('remove_confirm')}
             </Text>
             <View style={{ flexDirection: 'row', gap: 9, width: '100%' }}>
               <Pressable
@@ -251,7 +253,7 @@ export default function MedicinesScreen() {
                     color: tokens.text2,
                   }}
                 >
-                  Cancel
+                  {t('cancel')}
                 </Text>
               </Pressable>
               <Pressable
@@ -281,7 +283,7 @@ export default function MedicinesScreen() {
                     color: 'white',
                   }}
                 >
-                  Remove
+                  {t('remove')}
                 </Text>
               </Pressable>
             </View>

@@ -40,16 +40,17 @@ import type {
 import { today } from '@/lib/schedule';
 import { useCreateMedicine, useMedicines, useUpdateMedicine } from '@/lib/queries';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 const SCHEDULE_OPTIONS: ReadonlyArray<{
   id: ScheduleType;
-  label: string;
+  labelKey: 'every_day' | 'specific_day' | 'alternate_days' | 'tapering';
   emoji: string;
 }> = [
-  { id: 'daily', label: 'Every Day', emoji: '📅' },
-  { id: 'weekly', label: 'Specific Day', emoji: '📆' },
-  { id: 'alternate', label: 'Alternate Days', emoji: '🔄' },
-  { id: 'tapering', label: 'Tapering', emoji: '📉' },
+  { id: 'daily', labelKey: 'every_day', emoji: '📅' },
+  { id: 'weekly', labelKey: 'specific_day', emoji: '📆' },
+  { id: 'alternate', labelKey: 'alternate_days', emoji: '🔄' },
+  { id: 'tapering', labelKey: 'tapering', emoji: '📉' },
 ];
 
 const EMPTY_DOSES: DoseSchedule = {
@@ -66,6 +67,7 @@ interface MedicineFormProps {
 export default function MedicineForm({ editMed }: MedicineFormProps) {
   const router = useRouter();
   const { tokens } = useTheme();
+  const t = useT();
 
   const medsQ = useMedicines();
   const createMutation = useCreateMedicine();
@@ -217,7 +219,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         else router.replace('/medicines' as Href);
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Failed to update medicine';
-        Alert.alert('Could not update', msg);
+        Alert.alert(t('could_not_update'), msg);
       }
     } else {
       try {
@@ -226,7 +228,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         else router.replace('/medicines' as Href);
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Failed to save medicine';
-        Alert.alert('Could not save', msg);
+        Alert.alert(t('could_not_save'), msg);
       }
     }
   };
@@ -316,7 +318,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder="Search medicine or brand..."
+          placeholder={t('search_med')}
           placeholderTextColor={tokens.text2}
           style={{
             flex: 1,
@@ -437,12 +439,12 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
               marginBottom: 11,
             }}
           >
-            Not in database?
+            {t('not_in_db')}
           </Text>
           <TextInput
             value={customDrug}
             onChangeText={setCustomDrug}
-            placeholder="Enter medicine name"
+            placeholder={t('type_med_name')}
             placeholderTextColor={tokens.text2}
             style={{ ...inp, textAlign: 'center' }}
           />
@@ -482,7 +484,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
     return (
       <View>
         {/* Brand */}
-        <Lbl>Brand Name *</Lbl>
+        <Lbl>{t('brand_name_req')}</Lbl>
         {selDrug ? (
           <View
             style={{
@@ -503,7 +505,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
             <TextInput
               value={brand}
               onChangeText={setBrand}
-              placeholder="Or type"
+              placeholder={t('or_type')}
               placeholderTextColor={tokens.text2}
               style={{
                 flex: 1,
@@ -524,14 +526,14 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
           <TextInput
             value={brand}
             onChangeText={setBrand}
-            placeholder="Brand name"
+            placeholder={t('brand_name_placeholder')}
             placeholderTextColor={tokens.text2}
             style={inp}
           />
         )}
 
         {/* Dose */}
-        <Lbl>Dose / Strength *</Lbl>
+        <Lbl>{t('dose_strength_req')}</Lbl>
         {selDrug ? (
           <>
             <View
@@ -551,7 +553,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
                 />
               ))}
               <Chip
-                label="Custom"
+                label={t('custom')}
                 selected={dose === 'custom'}
                 onPress={() => setDose('custom')}
               />
@@ -579,7 +581,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         )}
 
         {/* Schedule type */}
-        <Lbl>Schedule Type *</Lbl>
+        <Lbl>{t('schedule_type_req')}</Lbl>
         <View
           style={{
             flexDirection: 'row',
@@ -619,7 +621,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
                       textAlign: 'center',
                     }}
                   >
-                    {opt.label}
+                    {t(opt.labelKey)}
                   </Text>
                 </Pressable>
               </View>
@@ -630,7 +632,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         {/* Weekly: pick day */}
         {scheduleType === 'weekly' ? (
           <>
-            <Lbl>Pick Day of Week</Lbl>
+            <Lbl>{t('pick_day_of_week')}</Lbl>
             <View
               style={{ flexDirection: 'row', gap: 5, marginBottom: 13 }}
             >
@@ -672,7 +674,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         {/* Daily: exclude days */}
         {scheduleType === 'daily' ? (
           <>
-            <Lbl>Skip these days (optional)</Lbl>
+            <Lbl>{t('skip_days')}</Lbl>
             <View
               style={{ flexDirection: 'row', gap: 5, marginBottom: 13 }}
             >
@@ -715,18 +717,18 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         {scheduleType !== 'tapering' ? (
           <>
             <Lbl>
-              <Text>Dose at Each Time * </Text>
+              <Text>{t('dose_each_time_req')} </Text>
               <Text
                 style={{ fontWeight: '600', color: tokens.text2, fontSize: 12 }}
               >
-                — +/- adjusts in ½ tablet steps
+                {t('half_tablet_steps')}
               </Text>
             </Lbl>
             <DoseControl schedule={doseSchedule} setter={setDoseSchedule} />
           </>
         ) : (
           <>
-            <Lbl>Tapering Schedule (e.g. for steroid taper)</Lbl>
+            <Lbl>{t('tapering_schedule_hint')}</Lbl>
             <TaperingBuilder
               phases={taperingPhases}
               setPhases={setTaperingPhases}
@@ -735,7 +737,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         )}
 
         {/* Food timing */}
-        <Lbl>Food Instructions *</Lbl>
+        <Lbl>{t('food_instructions_req')}</Lbl>
         <View style={{ flexDirection: 'column', gap: 5, marginBottom: 13 }}>
           {FOOD_TID.map((id, i) => {
             const active = foodTiming === id;
@@ -777,7 +779,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         {/* Duration */}
         {scheduleType !== 'tapering' ? (
           <>
-            <Lbl>Duration (days)</Lbl>
+            <Lbl>{t('duration_days')}</Lbl>
             <TextInput
               value={String(durationDays)}
               onChangeText={(v) => {
@@ -791,7 +793,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         ) : null}
 
         {/* Start date */}
-        <Lbl>Start Date</Lbl>
+        <Lbl>{t('start_date')}</Lbl>
         <TextInput
           value={startDate}
           onChangeText={setStartDate}
@@ -803,7 +805,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         />
 
         {/* Reminder time */}
-        <Lbl>Reminder Time (optional)</Lbl>
+        <Lbl>{t('reminder_time')}</Lbl>
         <TextInput
           value={reminderTime}
           onChangeText={setReminderTime}
@@ -815,11 +817,11 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
         />
 
         {/* Notes */}
-        <Lbl>Notes (optional)</Lbl>
+        <Lbl>{t('notes')}</Lbl>
         <TextInput
           value={notes}
           onChangeText={setNotes}
-          placeholder="Special instructions..."
+          placeholder={t('special_instructions')}
           placeholderTextColor={tokens.text2}
           style={{ ...inp, marginBottom: 14 }}
         />
@@ -849,7 +851,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
                   marginBottom: 2,
                 }}
               >
-                Doctor's Tip
+                {t('doctors_tip')}
               </Text>
               <Text style={{ fontSize: 13, color: '#78350F', lineHeight: 19 }}>
                 {selDrug.tip}
@@ -876,11 +878,11 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
               <Text style={{ color: 'white', fontWeight: '900', fontSize: 18 }}>
                 {isSaving
                   ? editMed
-                    ? 'Updating...'
-                    : 'Saving...'
+                    ? t('updating')
+                    : t('saving')
                   : editMed
-                  ? '💊 Update Medicine'
-                  : '💊 Save Medicine'}
+                  ? `💊 ${t('update_medicine')}`
+                  : `💊 ${t('save_medicine')}`}
               </Text>
             </LinearGradient>
           ) : (
@@ -892,7 +894,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
               }}
             >
               <Text style={{ color: 'white', fontWeight: '900', fontSize: 18 }}>
-                {editMed ? '💊 Update Medicine' : '💊 Save Medicine'}
+                {editMed ? `💊 ${t('update_medicine')}` : `💊 ${t('save_medicine')}`}
               </Text>
             </View>
           )}
@@ -928,10 +930,10 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 20, fontWeight: '900', color: 'white' }}>
               {editMed
-                ? 'Edit Medicine'
+                ? t('edit_medicine')
                 : step === 1
-                ? 'Select Medicine'
-                : 'Configure Schedule'}
+                ? t('select_medicine')
+                : t('configure_schedule')}
             </Text>
             <Text
               style={{
@@ -941,7 +943,7 @@ export default function MedicineForm({ editMed }: MedicineFormProps) {
                 marginTop: 1,
               }}
             >
-              {editMed ? 'Update details below' : `Step ${step} of 2`}
+              {editMed ? t('update_details_below') : `Step ${step} of 2`}
             </Text>
           </View>
         </View>

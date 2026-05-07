@@ -5,6 +5,7 @@ import { SLOTS, TS_DATA } from '@/constants/slots';
 import type { Medicine } from '@/lib/api';
 import { formatDose } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
+import { useT } from '@/lib/i18n/useT';
 
 interface Props {
   med: Medicine;
@@ -94,6 +95,7 @@ export default function MedicineRow({
   onEdit,
 }: Props) {
   const { tokens } = useTheme();
+  const t = useT();
   const barColor = med.color ?? tokens.text2;
 
   return (
@@ -189,17 +191,17 @@ export default function MedicineRow({
             backgroundColor: tokens.card2,
           }}
         >
-          <InfoRow label="Food" value={med.foodTimingLabel || '—'} />
+          <InfoRow label={t('food_label')} value={med.foodTimingLabel || '—'} />
           <InfoRow
-            label="Duration"
-            value={`${med.durationDays ?? '—'} days`}
+            label={t('duration_label')}
+            value={`${med.durationDays ?? '—'} ${t('days')}`}
           />
-          <InfoRow label="Started" value={med.startDate} />
-          <InfoRow label="Route" value={med.route || 'Oral'} />
+          <InfoRow label={t('started_label')} value={med.startDate} />
+          <InfoRow label={t('route_label')} value={med.route || t('oral')} />
           {med.reminderTime ? (
-            <InfoRow label="Reminder" value={med.reminderTime} />
+            <InfoRow label={t('reminder_label')} value={med.reminderTime} />
           ) : null}
-          {med.notes ? <InfoRow label="Notes" value={med.notes} /> : null}
+          {med.notes ? <InfoRow label={t('notes_label')} value={med.notes} /> : null}
 
           {med.tip ? (
             <View
@@ -250,7 +252,7 @@ export default function MedicineRow({
             >
               <Pencil color="white" size={14} />
               <Text style={{ color: 'white', fontWeight: '700', fontSize: 14 }}>
-                Edit
+                {t('edit')}
               </Text>
             </Pressable>
 
@@ -271,7 +273,7 @@ export default function MedicineRow({
             >
               <Trash2 size={14} color="#DC2626" />
               <Text style={{ color: '#DC2626', fontWeight: '700', fontSize: 14 }}>
-                Remove
+                {t('remove')}
               </Text>
             </Pressable>
           </View>
