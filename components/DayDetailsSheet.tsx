@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { CheckCircle, Circle, X } from 'lucide-react-native';
-import { TS_DATA } from '@/constants/slots';
+import { TS_DATA, type SlotId } from '@/constants/slots';
 import { useT } from '@/lib/i18n/useT';
-import { formatDose, fromStr, getMedsForDate, type Medicine } from '@/lib/schedule';
+import { useToggleTaken } from '@/lib/queries';
+import { formatDose, fromStr, getMedsForDate, today, type Medicine } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
 
 interface DayDetailsSheetProps {
@@ -21,11 +22,22 @@ export default function DayDetailsSheet({
 }: DayDetailsSheetProps) {
   const { tokens } = useTheme();
   const t = useT();
+  const toggle = useToggleTaken();
+
+  const isFuture = useMemo(
+    () => (dateStr ? dateStr > today() : false),
+    [dateStr],
+  );
 
   const dayMeds = useMemo(
     () => (dateStr ? getMedsForDate(meds, dateStr) : []),
     [meds, dateStr],
   );
+
+  const onToggle = (medicineId: string, slot: SlotId, currentlyTaken: boolean) => {
+    if (!dateStr || isFuture) return;
+    toggle.mutate({ medicineId, logDate: dateStr, slot, taken: !currentlyTaken });
+  };
 
   const dayLabel = useMemo(() => {
     if (!dateStr) return '';
@@ -175,22 +187,21 @@ export default function DayDetailsSheet({
                     </View>
                     {sm.map((med) => {
                       const taken = !!log[`${dateStr}_${med.id}_${slot.id}`];
-                      return (
-                        <View
-                          key={`${med.id}-${slot.id}`}
-                          style={{
-                            backgroundColor: taken ? '#F0FDF4' : tokens.card2,
-                            borderRadius: 11,
-                            paddingVertical: 10,
-                            paddingHorizontal: 12,
-                            marginBottom: 6,
-                            borderWidth: 2,
-                            borderColor: taken ? '#86EFAC' : tokens.border,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: 9,
-                          }}
-                        >
+                      const rowStyle = {
+                        backgroundColor: taken ? '#F0FDF4' : tokens.card2,
+                        borderRadius: 11,
+                        paddingVertical: 10,
+                        paddingHorizontal: 12,
+                        marginBottom: 6,
+                        borderWidth: 2,
+                        borderColor: taken ? '#86EFAC' : tokens.border,
+                        flexDirection: 'row' as const,
+                        alignItems: 'center' as const,
+                        gap: 9,
+                        opacity: isFuture ? 0.55 : 1,
+                      };
+                      const rowContent = (
+                        <>
                           <View
                             style={{
                               width: 10,
@@ -225,7 +236,29 @@ export default function DayDetailsSheet({
                           ) : (
                             <Circle size={20} color={tokens.text2} />
                           )}
-                        </View>
+                        </>
+                      );
+                      if (isFuture) {
+                        return (
+                          <View key={`${med.id}-${slot.id}`} style={rowStyle}>
+                            {rowContent}
+                          </View>
+                        );
+                      }
+                      return (
+                        <Pressable
+                          key={`${med.id}-${slot.id}`}
+                          accessibilityRole="button"
+                          accessibilityState={{ checked: taken }}
+                          accessibilityLabel={`${med.drugName} ${slot.label}`}
+                          onPress={() => onToggle(med.id, slot.id, taken)}
+                          style={({ pressed }) => ({
+                            ...rowStyle,
+                            opacity: pressed ? 0.7 : rowStyle.opacity,
+                          })}
+                        >
+                          {rowContent}
+                        </Pressable>
                       );
                     })}
                   </View>
