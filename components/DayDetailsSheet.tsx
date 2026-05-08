@@ -4,7 +4,14 @@ import { CheckCircle, Circle, X } from 'lucide-react-native';
 import { TS_DATA, type SlotId } from '@/constants/slots';
 import { useT } from '@/lib/i18n/useT';
 import { useToggleTaken } from '@/lib/queries';
-import { formatDose, fromStr, getMedsForDate, today, type Medicine } from '@/lib/schedule';
+import {
+  canEditLogForDate,
+  formatDose,
+  fromStr,
+  getMedsForDate,
+  today,
+  type Medicine,
+} from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
 
 interface DayDetailsSheetProps {
@@ -24,10 +31,8 @@ export default function DayDetailsSheet({
   const t = useT();
   const toggle = useToggleTaken();
 
-  const isFuture = useMemo(
-    () => (dateStr ? dateStr > today() : false),
-    [dateStr],
-  );
+  const canEdit = useMemo(() => canEditLogForDate(dateStr, today()), [dateStr]);
+  const isFuture = !canEdit && dateStr !== null;
 
   const dayMeds = useMemo(
     () => (dateStr ? getMedsForDate(meds, dateStr) : []),
@@ -35,7 +40,7 @@ export default function DayDetailsSheet({
   );
 
   const onToggle = (medicineId: string, slot: SlotId, currentlyTaken: boolean) => {
-    if (!dateStr || isFuture) return;
+    if (!dateStr || !canEdit) return;
     toggle.mutate({ medicineId, logDate: dateStr, slot, taken: !currentlyTaken });
   };
 

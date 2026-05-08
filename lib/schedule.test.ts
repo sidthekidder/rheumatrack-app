@@ -1,4 +1,5 @@
 import {
+  canEditLogForDate,
   daysBetween,
   formatDose,
   formatDoseShort,
@@ -249,5 +250,33 @@ describe('getMedsForDate', () => {
   it('returns empty array when nothing due', () => {
     const med = makeMed({ startDate: '2027-01-01' });
     expect(getMedsForDate([med], START)).toEqual([]);
+  });
+});
+
+describe('canEditLogForDate', () => {
+  const TODAY = '2026-05-08';
+
+  it('allows editing today', () => {
+    expect(canEditLogForDate(TODAY, TODAY)).toBe(true);
+  });
+
+  it('allows editing a past day', () => {
+    expect(canEditLogForDate('2026-05-01', TODAY)).toBe(true);
+  });
+
+  it('allows editing a day far in the past', () => {
+    expect(canEditLogForDate('2024-01-15', TODAY)).toBe(true);
+  });
+
+  it('blocks editing a future day', () => {
+    expect(canEditLogForDate('2026-05-09', TODAY)).toBe(false);
+  });
+
+  it('blocks editing a day far in the future', () => {
+    expect(canEditLogForDate('2027-01-01', TODAY)).toBe(false);
+  });
+
+  it('returns false when dateStr is null', () => {
+    expect(canEditLogForDate(null, TODAY)).toBe(false);
   });
 });

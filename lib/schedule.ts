@@ -58,6 +58,14 @@ export const fromStr = (s: string): Date => {
   return new Date(y, m - 1, d);
 };
 
+export const canEditLogForDate = (
+  dateStr: string | null,
+  todayStr: string,
+): boolean => {
+  if (!dateStr) return false;
+  return dateStr <= todayStr;
+};
+
 export const daysBetween = (a: string, b: string): number =>
   Math.floor((fromStr(b).getTime() - fromStr(a).getTime()) / 86400000);
 
