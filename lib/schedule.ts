@@ -66,6 +66,16 @@ export const canEditLogForDate = (
   return dateStr <= todayStr;
 };
 
+export const filterHistoryForDate = <T extends { logDate: string; editedAt: string }>(
+  entries: T[],
+  dateStr: string | null,
+): T[] => {
+  if (!dateStr) return [];
+  return entries
+    .filter((e) => e.logDate === dateStr)
+    .sort((a, b) => (a.editedAt < b.editedAt ? 1 : a.editedAt > b.editedAt ? -1 : 0));
+};
+
 export const daysBetween = (a: string, b: string): number =>
   Math.floor((fromStr(b).getTime() - fromStr(a).getTime()) / 86400000);
 

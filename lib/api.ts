@@ -240,6 +240,19 @@ export interface MedicationLogUpsert {
   taken: boolean;
 }
 
+export interface MedicationLogHistoryEntry {
+  id: string;
+  logId: string;
+  patientId: string;
+  medicineId: string;
+  logDate: string;
+  slot: SlotId;
+  priorTaken: boolean | null;
+  newTaken: boolean;
+  editedByUserId: string;
+  editedAt: string;
+}
+
 // Shape mirrors backend SCAN_PROMPT (app/services/scan_prompt.py).
 // camelize() converts snake_case keys from the parser to camelCase.
 export interface ParsedMedicine {
@@ -346,6 +359,14 @@ export const setMedicationLog = (
     method: 'PUT',
     body: JSON.stringify(body),
   });
+
+export const getMedicationLogHistory = (
+  from: string,
+  to: string
+): Promise<MedicationLogHistoryEntry[]> =>
+  apiFetch<MedicationLogHistoryEntry[]>(
+    `/medication-log/history?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+  );
 
 export const scanPrescription = (file: UploadFile): Promise<ScanResult> =>
   apiUpload<ScanResult>('/scan', file, 'file');

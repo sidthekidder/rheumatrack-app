@@ -14,6 +14,7 @@ import {
   deleteLabReport,
   deleteMedicine,
   getMedicationLog,
+  getMedicationLogHistory,
   getPatient,
   listAppointments,
   listFlareEntries,
@@ -35,6 +36,7 @@ import {
   type LabReport,
   type LabReportCreate,
   type MedicationLogEntry,
+  type MedicationLogHistoryEntry,
   type MedicationLogUpsert,
   type Medicine,
   type MedicineCreate,
@@ -58,6 +60,9 @@ export const queryKeys = {
   medicationLog: (from: string, to: string) =>
     ['medicationLog', from, to] as const,
   medicationLogAll: ['medicationLog'] as const,
+  medicationLogHistory: (from: string, to: string) =>
+    ['medicationLogHistory', from, to] as const,
+  medicationLogHistoryAll: ['medicationLogHistory'] as const,
   labReports: ['labReports'] as const,
   flareEntries: ['flareEntries'] as const,
   appointments: ['appointments'] as const,
@@ -85,6 +90,18 @@ export const useMedicationLog = (from: string, to: string) =>
     queryKey: queryKeys.medicationLog(from, to),
     queryFn: () => getMedicationLog(from, to),
     enabled: Boolean(from) && Boolean(to),
+    placeholderData: keepPreviousData,
+  });
+
+export const useMedicationLogHistory = (
+  from: string,
+  to: string,
+  opts: { enabled?: boolean } = {},
+) =>
+  useQuery<MedicationLogHistoryEntry[]>({
+    queryKey: queryKeys.medicationLogHistory(from, to),
+    queryFn: () => getMedicationLogHistory(from, to),
+    enabled: (opts.enabled ?? true) && Boolean(from) && Boolean(to),
     placeholderData: keepPreviousData,
   });
 
@@ -323,6 +340,7 @@ export const useToggleTaken = () => {
     },
     onSettled: () => {
       qc.invalidateQueries({ queryKey: queryKeys.medicationLogAll });
+      qc.invalidateQueries({ queryKey: queryKeys.medicationLogHistoryAll });
     },
   });
 };

@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
-import { CheckCircle, Circle, X } from 'lucide-react-native';
+import { CheckCircle, Circle, History, X } from 'lucide-react-native';
 import { TS_DATA, type SlotId } from '@/constants/slots';
 import { useT } from '@/lib/i18n/useT';
-import { useToggleTaken } from '@/lib/queries';
+import { useMedicationLogHistory, useToggleTaken } from '@/lib/queries';
 import {
   canEditLogForDate,
+  filterHistoryForDate,
   formatDose,
   fromStr,
   getMedsForDate,
@@ -13,6 +14,7 @@ import {
   type Medicine,
 } from '@/lib/schedule';
 import { useTheme } from '@/lib/themeStore';
+import EditHistorySheet from '@/components/EditHistorySheet';
 
 interface DayDetailsSheetProps {
   dateStr: string | null;
@@ -33,6 +35,16 @@ export default function DayDetailsSheet({
 
   const canEdit = useMemo(() => canEditLogForDate(dateStr, today()), [dateStr]);
   const isFuture = !canEdit && dateStr !== null;
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  const fromTo = dateStr ?? '';
+  const historyQ = useMedicationLogHistory(fromTo, fromTo, {
+    enabled: Boolean(dateStr) && !isFuture,
+  });
+  const historyForDay = useMemo(
+    () => filterHistoryForDate(historyQ.data ?? [], dateStr),
+    [historyQ.data, dateStr],
+  );
 
   const dayMeds = useMemo(
     () => (dateStr ? getMedsForDate(meds, dateStr) : []),
@@ -270,9 +282,49 @@ export default function DayDetailsSheet({
                 );
               })
             )}
+
+            {historyForDay.length > 0 ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('view_edit_history')}
+                onPress={() => setHistoryOpen(true)}
+                style={({ pressed }) => ({
+                  marginTop: 6,
+                  paddingVertical: 11,
+                  paddingHorizontal: 14,
+                  borderRadius: 11,
+                  borderWidth: 1.5,
+                  borderColor: tokens.border,
+                  backgroundColor: tokens.card2,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  opacity: pressed ? 0.7 : 1,
+                })}
+              >
+                <History size={15} color={tokens.text} />
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontWeight: '700',
+                    color: tokens.text,
+                  }}
+                >
+                  {historyForDay.length === 1
+                    ? t('view_edit_history')
+                    : t('view_edit_history_n', { n: historyForDay.length })}
+                </Text>
+              </Pressable>
+            ) : null}
           </ScrollView>
         </View>
       </View>
+      <EditHistorySheet
+        dateStr={historyOpen ? dateStr : null}
+        meds={meds}
+        onClose={() => setHistoryOpen(false)}
+      />
     </Modal>
   );
 }

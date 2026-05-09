@@ -484,4 +484,17 @@ export const hi: Record<StringKey, string> = {
   medicine_scheduled_singular: '1 दवा निर्धारित',
   no_medicines_scheduled_today: 'आज कोई दवा निर्धारित नहीं',
   sends_health_card_hint: 'नाम, दवाएँ, अनुपालन और असामान्य लैब भेजता है — टाइप करने की ज़रूरत नहीं',
+
+  // Edit history (medication log audit trail)
+  edit_history: 'संपादन इतिहास',
+  view_edit_history: 'संपादन इतिहास देखें',
+  view_edit_history_n: 'संपादन इतिहास देखें ({n})',
+  no_edit_history: 'इस दिन के लिए कोई संपादन दर्ज नहीं हुआ है।',
+  history_state_none: 'कोई लॉग नहीं',
+  history_state_taken: 'लिया',
+  history_state_not_taken: 'नहीं लिया',
+  edited_1_day_late: '1 दिन बाद संपादित',
+  edited_n_days_late: '{n} दिन बाद संपादित',
+  unknown_medicine: 'अज्ञात दवा',
+  close: 'बंद करें',
 };

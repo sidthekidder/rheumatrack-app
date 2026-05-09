@@ -484,6 +484,19 @@ export const en = {
   medicine_scheduled_singular: '1 medicine scheduled',
   no_medicines_scheduled_today: 'No medicines scheduled today',
   sends_health_card_hint: 'Sends name, medicines, compliance and abnormal labs — no typing needed',
+
+  // Edit history (medication log audit trail)
+  edit_history: 'Edit history',
+  view_edit_history: 'View edit history',
+  view_edit_history_n: 'View edit history ({n})',
+  no_edit_history: 'No edits recorded for this day yet.',
+  history_state_none: 'No log',
+  history_state_taken: 'Taken',
+  history_state_not_taken: 'Not taken',
+  edited_1_day_late: 'edited 1 day later',
+  edited_n_days_late: 'edited {n} days later',
+  unknown_medicine: 'Unknown medicine',
+  close: 'Close',
 } as const;
 
 export type StringKey = keyof typeof en;

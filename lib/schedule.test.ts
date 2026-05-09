@@ -1,6 +1,7 @@
 import {
   canEditLogForDate,
   daysBetween,
+  filterHistoryForDate,
   formatDose,
   formatDoseShort,
   waPhone,
@@ -14,6 +15,7 @@ import {
   type MedicationLog,
   type DoseSchedule,
 } from './schedule';
+import type { MedicationLogHistoryEntry } from './api';
 
 // 2026-01-01 is a Thursday (dow = 4). All test dates anchor to this.
 const START = '2026-01-01'; // Thu
@@ -278,5 +280,52 @@ describe('canEditLogForDate', () => {
 
   it('returns false when dateStr is null', () => {
     expect(canEditLogForDate(null, TODAY)).toBe(false);
+  });
+});
+
+describe('filterHistoryForDate', () => {
+  const mkEntry = (overrides: Partial<MedicationLogHistoryEntry> = {}): MedicationLogHistoryEntry => ({
+    id: 'h-1',
+    logId: 'l-1',
+    patientId: 'p-1',
+    medicineId: 'm-1',
+    logDate: '2026-05-08',
+    slot: 'morning',
+    priorTaken: null,
+    newTaken: true,
+    editedByUserId: 'u-1',
+    editedAt: '2026-05-08T10:00:00Z',
+    ...overrides,
+  });
+
+  it('returns empty array when dateStr is null', () => {
+    expect(filterHistoryForDate([mkEntry()], null)).toEqual([]);
+  });
+
+  it('returns empty array when no entries match the date', () => {
+    expect(filterHistoryForDate([mkEntry({ logDate: '2026-05-07' })], '2026-05-08')).toEqual([]);
+  });
+
+  it('returns only entries matching the date', () => {
+    const entries = [
+      mkEntry({ id: 'h-a', logDate: '2026-05-08' }),
+      mkEntry({ id: 'h-b', logDate: '2026-05-07' }),
+      mkEntry({ id: 'h-c', logDate: '2026-05-08' }),
+    ];
+    const result = filterHistoryForDate(entries, '2026-05-08');
+    expect(result.map((e) => e.id).sort()).toEqual(['h-a', 'h-c']);
+  });
+
+  it('sorts results newest editedAt first', () => {
+    const entries = [
+      mkEntry({ id: 'old', editedAt: '2026-05-08T08:00:00Z' }),
+      mkEntry({ id: 'new', editedAt: '2026-05-08T12:00:00Z' }),
+      mkEntry({ id: 'mid', editedAt: '2026-05-08T10:00:00Z' }),
+    ];
+    expect(filterHistoryForDate(entries, '2026-05-08').map((e) => e.id)).toEqual([
+      'new',
+      'mid',
+      'old',
+    ]);
   });
 });
