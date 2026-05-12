@@ -44,6 +44,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder={t('auth_email')}
+        placeholderTextColor={Colors.muted}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -53,6 +54,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder={t('auth_password')}
+        placeholderTextColor={Colors.muted}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -85,7 +87,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: Colors.background },
   title: { fontSize: 28, fontWeight: 'bold', marginBottom: 32, textAlign: 'center', color: Colors.text },
-  input: { borderWidth: 1, borderColor: Colors.border, borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 16 },
+  input: { borderWidth: 1, borderColor: Colors.border, borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 16, color: Colors.text, backgroundColor: Colors.background },
   button: { backgroundColor: Colors.primary, borderRadius: 8, padding: 14, alignItems: 'center' },
   buttonDisabled: { opacity: 0.7 },
   buttonRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },

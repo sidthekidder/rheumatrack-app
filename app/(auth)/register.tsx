@@ -41,6 +41,7 @@ export default function RegisterScreen() {
       <TextInput
         style={styles.input}
         placeholder={t('auth_email')}
+        placeholderTextColor={Colors.muted}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -50,6 +51,7 @@ export default function RegisterScreen() {
       <TextInput
         style={styles.input}
         placeholder={t('auth_password_hint')}
+        placeholderTextColor={Colors.muted}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -68,7 +70,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: Colors.background },
   title: { fontSize: 28, fontWeight: 'bold', marginBottom: 32, textAlign: 'center', color: Colors.text },
-  input: { borderWidth: 1, borderColor: Colors.border, borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 16 },
+  input: { borderWidth: 1, borderColor: Colors.border, borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 16, color: Colors.text, backgroundColor: Colors.background },
   button: { backgroundColor: Colors.primary, borderRadius: 8, padding: 14, alignItems: 'center' },
   buttonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
   link: { color: Colors.primary, fontSize: 14, textAlign: 'center', marginTop: 20 },
