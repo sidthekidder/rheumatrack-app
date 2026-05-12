@@ -13,15 +13,21 @@ export default function MeLayout() {
       <TopTabs
         screenOptions={{
           tabBarStyle: { backgroundColor: tokens.card, elevation: 0 },
-          tabBarLabelStyle: { fontWeight: '700', fontSize: 12, textTransform: 'none' },
+          tabBarLabelStyle: {
+            fontWeight: '700',
+            fontSize: 11,
+            textTransform: 'none',
+            marginHorizontal: 0,
+          },
+          tabBarItemStyle: { paddingHorizontal: 4 },
           tabBarIndicatorStyle: { backgroundColor: '#0D9488', height: 3 },
           tabBarActiveTintColor: '#0D9488',
           tabBarInactiveTintColor: tokens.text2,
         }}
       >
-        <TopTabs.Screen name="index" options={{ title: `🏥 ${t('health_card')}` }} />
-        <TopTabs.Screen name="appointments" options={{ title: `📅 ${t('appointments')}` }} />
-        <TopTabs.Screen name="profile" options={{ title: `👤 ${t('profile')}` }} />
+        <TopTabs.Screen name="index" options={{ title: t('health_card') }} />
+        <TopTabs.Screen name="appointments" options={{ title: t('appointments') }} />
+        <TopTabs.Screen name="profile" options={{ title: t('profile') }} />
       </TopTabs>
     </SafeAreaView>
   );

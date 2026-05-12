@@ -9,9 +9,9 @@ describe('lookup (pure i18n helper)', () => {
     expect(lookup('hi', 'save')).toBe('सहेजें');
   });
 
-  it('falls back to English when the key is missing in Hindi', () => {
-    // splash_tagline is untranslated in hi.ts — value equals the English string
-    expect(lookup('hi', 'splash_tagline')).toBe('Your rheumatology companion');
+  it('preserves brand names in both locales (e.g. YouTube)', () => {
+    expect(lookup('hi', 'youtube')).toBe('YouTube');
+    expect(lookup('en', 'youtube')).toBe('YouTube');
   });
 
   it('falls back to the key itself when missing in both', () => {

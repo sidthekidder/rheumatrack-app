@@ -207,19 +207,17 @@ export default function ScanScreen() {
       const result: ScanResult = await scanMutation.mutateAsync(upload);
       const meds = getMeds(result.parsed);
       if (meds.length === 0) {
-        setError('No medicines found in image.');
+        setError(t('scan_no_meds_found'));
         return;
       }
       setExtracted(result.parsed);
       setSelected(new Set(meds.map((_m, i) => i)));
     } catch (e) {
       const msg =
-        e instanceof Error
-          ? e.message
-          : 'Could not read prescription. Try a clearer image.';
+        e instanceof Error ? e.message : t('scan_could_not_read_try_clearer');
       setError(msg);
     }
-  }, [selectedFile, scanMutation]);
+  }, [selectedFile, scanMutation, t]);
 
   const meds = useMemo(() => getMeds(extracted), [extracted]);
 

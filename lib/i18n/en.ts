@@ -467,6 +467,8 @@ export const en = {
   scan_extracting: 'Extracting medications, schedules, and diagnosis',
   could_not_read_prescription: 'Could not read prescription',
   scan_tips_heading: '💡 Tips for best results',
+  scan_no_meds_found: 'No medicines found in image.',
+  scan_could_not_read_try_clearer: 'Could not read prescription. Try a clearer image.',
 
   // H6 Wellness tab
   exercise_guide_header: '💪 Exercise Guide',
