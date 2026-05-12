@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { usePatient } from '../lib/queries';
 import { useReminderScheduler } from '../lib/notifications';
+import { useOtaUpdates } from '../lib/updates';
 
 function describeThrown(error: unknown): { headline: string; body: string } {
   if (error instanceof Error) {
@@ -161,6 +162,7 @@ function Gate({ session, initialised }: { session: Session | null; initialised: 
 }
 
 export default function RootLayout() {
+  useOtaUpdates();
   const [session, setSession] = useState<Session | null>(null);
   const [initialised, setInitialised] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);

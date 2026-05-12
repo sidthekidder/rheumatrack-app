@@ -8,7 +8,11 @@
     "scheme": "rheumatrack",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
@@ -42,8 +46,16 @@
           "background_color": "#F0FDFA",
           "theme_color": "#0D9488",
           "icons": [
-            { "src": "/assets/images/icon.png", "sizes": "192x192", "type": "image/png" },
-            { "src": "/assets/images/icon.png", "sizes": "512x512", "type": "image/png" }
+            {
+              "src": "/assets/images/icon.png",
+              "sizes": "192x192",
+              "type": "image/png"
+            },
+            {
+              "src": "/assets/images/icon.png",
+              "sizes": "512x512",
+              "type": "image/png"
+            }
           ],
           "share_target": {
             "action": "/scan",
@@ -52,7 +64,15 @@
             "params": {
               "title": "title",
               "text": "text",
-              "files": [{ "name": "file", "accept": ["application/pdf", "image/*"] }]
+              "files": [
+                {
+                  "name": "file",
+                  "accept": [
+                    "application/pdf",
+                    "image/*"
+                  ]
+                }
+              ]
             }
           }
         }
@@ -64,6 +84,19 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/9dabac58-8340-4985-90ab-6c33f56efa09"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9dabac58-8340-4985-90ab-6c33f56efa09"
+      }
+    },
+    "owner": "sidthekidder"
   }
 }
