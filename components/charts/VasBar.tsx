@@ -1,5 +1,12 @@
-import { useState } from 'react';
-import { LayoutChangeEvent, Pressable, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import {
+  GestureResponderEvent,
+  LayoutChangeEvent,
+  Platform,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
 import { useTheme } from '@/lib/themeStore';
 
 interface VasBarProps {
@@ -29,14 +36,34 @@ export default function VasBar({
 }: VasBarProps) {
   const { tokens } = useTheme();
   const [trackWidth, setTrackWidth] = useState(0);
+  const trackRef = useRef<View>(null);
   const ratio = max === min ? 0 : (value - min) / (max - min);
   const fillWidth = Math.max(0, Math.min(1, ratio)) * trackWidth;
 
   const onLayout = (e: LayoutChangeEvent) => setTrackWidth(e.nativeEvent.layout.width);
 
-  const onPressTrack = (e: { nativeEvent: { locationX: number } }) => {
+  // RN-Web doesn't populate nativeEvent.locationX the way native does, so fall
+  // through several sources to figure out the click x inside the track.
+  const extractX = (e: GestureResponderEvent): number | null => {
+    const ne = e.nativeEvent as unknown as Record<string, unknown>;
+    if (typeof ne.locationX === 'number' && !Number.isNaN(ne.locationX)) {
+      return ne.locationX;
+    }
+    if (typeof ne.offsetX === 'number' && !Number.isNaN(ne.offsetX)) {
+      return ne.offsetX;
+    }
+    if (Platform.OS === 'web' && trackRef.current && typeof ne.pageX === 'number') {
+      const el = trackRef.current as unknown as HTMLElement;
+      const rect = el.getBoundingClientRect?.();
+      if (rect) return ne.pageX - rect.left;
+    }
+    return null;
+  };
+
+  const onPressTrack = (e: GestureResponderEvent) => {
     if (trackWidth <= 0) return;
-    const x = e.nativeEvent.locationX;
+    const x = extractX(e);
+    if (x === null) return;
     const r = Math.max(0, Math.min(1, x / trackWidth));
     const raw = min + r * (max - min);
     const snapped = Math.round(raw / step) * step;
@@ -53,6 +80,7 @@ export default function VasBar({
         </Text>
       </View>
       <Pressable
+        ref={trackRef}
         onPress={onPressTrack}
         onLayout={onLayout}
         style={{
