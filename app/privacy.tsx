@@ -2,7 +2,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { Stack } from 'expo-router';
 
 const LAST_UPDATED = '2026-06-09';
-const SUPPORT_EMAIL = 'support@rheumatrack.app';
+const SUPPORT_EMAIL = 'rheumatrack.support@gmail.com';
 const COMPANY = 'RheumaTrack';
 
 export default function PrivacyPolicy() {

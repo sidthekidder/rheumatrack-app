@@ -422,7 +422,7 @@ export const hi: Record<StringKey, string> = {
   me_terms: 'उपयोग की शर्तें',
   me_support: 'सहायता',
   me_support_email: 'सहायता को ईमेल करें',
-  me_support_email_addr: 'support@rheumatrack.app',
+  me_support_email_addr: 'rheumatrack.support@gmail.com',
   me_delete_account: 'खाता हटाएं',
   me_delete_account_title: 'क्या आप अपना खाता हटाना चाहते हैं?',
   me_delete_account_body: 'यह आपकी दवाओं, डायरी प्रविष्टियों, लैब रिपोर्ट्स और अपॉइंटमेंट्स सहित आपके RheumaTrack खाते को स्थायी रूप से हटाने का अनुरोध करेगा। हम 30 दिनों के भीतर हटाने की प्रक्रिया पूरी करते हैं। आपको तुरंत साइन आउट कर दिया जाएगा।',

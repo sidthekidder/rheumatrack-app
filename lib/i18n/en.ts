@@ -423,7 +423,7 @@ export const en = {
   me_terms: 'Terms of use',
   me_support: 'Support',
   me_support_email: 'Email support',
-  me_support_email_addr: 'support@rheumatrack.app',
+  me_support_email_addr: 'rheumatrack.support@gmail.com',
   me_delete_account: 'Delete account',
   me_delete_account_title: 'Delete your account?',
   me_delete_account_body: 'This will request permanent deletion of your RheumaTrack account, including your medicines, diary entries, lab reports, and appointments. We complete deletion within 30 days. You will be signed out immediately.',
