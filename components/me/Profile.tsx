@@ -13,16 +13,26 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Notifications from 'expo-notifications';
+import { useRouter } from 'expo-router';
 import {
   Bell,
   BellOff,
+  ChevronRight,
+  Mail,
   Monitor,
   Moon,
+  ShieldCheck,
   Sun,
+  Trash2,
   User,
 } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { useMedicines, usePatchPatient, usePatient } from '@/lib/queries';
+import {
+  useMedicines,
+  usePatchPatient,
+  usePatient,
+  useRequestAccountDeletion,
+} from '@/lib/queries';
 import { requestPermissions, scheduleAllReminders } from '@/lib/notifications';
 import { supabase } from '@/lib/supabase';
 import { useTheme, type ThemeMode } from '@/lib/themeStore';
@@ -54,9 +64,11 @@ const THEME_OPTIONS: ReadonlyArray<{
 export default function Profile() {
   const { tokens, mode, setMode } = useTheme();
   const t = useT();
+  const router = useRouter();
   const patientQ = usePatient();
   const patchPatient = usePatchPatient();
   const medsQ = useMedicines();
+  const requestDeletion = useRequestAccountDeletion();
   const patient = patientQ.data ?? null;
 
   const [editP, setEditP] = useState(false);
@@ -158,6 +170,45 @@ export default function Profile() {
         err instanceof Error ? err.message : 'Unknown error',
       );
     }
+  };
+
+  const openPrivacy = () => {
+    router.push('/privacy');
+  };
+
+  const emailSupport = () => {
+    Linking.openURL(`mailto:${t('me_support_email_addr')}`).catch(() => {
+      /* noop — mail client may be unavailable on web */
+    });
+  };
+
+  const confirmDeleteAccount = () => {
+    Alert.alert(
+      t('me_delete_account_title'),
+      t('me_delete_account_body'),
+      [
+        { text: t('me_delete_account_cancel'), style: 'cancel' },
+        {
+          text: t('me_delete_account_confirm'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await requestDeletion.mutateAsync();
+              Alert.alert(
+                t('me_delete_account_done_title'),
+                t('me_delete_account_done_body'),
+              );
+              await supabase.auth.signOut();
+            } catch (err) {
+              Alert.alert(
+                t('me_delete_account_failed'),
+                err instanceof Error ? err.message : 'Unknown error',
+              );
+            }
+          },
+        },
+      ],
+    );
   };
 
   if (patientQ.isLoading) {
@@ -522,6 +573,93 @@ export default function Profile() {
             </View>
           </Section>
 
+          {/* About */}
+          <Section title={t('me_about')} tokens={tokens}>
+            <Text
+              style={{
+                color: tokens.text2,
+                fontSize: 13,
+                lineHeight: 18,
+                fontWeight: '600',
+                marginBottom: 10,
+              }}
+            >
+              {t('me_disclaimer')}
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('me_privacy_policy')}
+              onPress={openPrivacy}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+                paddingVertical: 10,
+                paddingHorizontal: 11,
+                borderRadius: 9,
+                backgroundColor: tokens.card2,
+                borderWidth: 1,
+                borderColor: tokens.border,
+              }}
+            >
+              <ShieldCheck size={18} color={tokens.text2} />
+              <Text
+                style={{
+                  flex: 1,
+                  color: tokens.text,
+                  fontWeight: '700',
+                  fontSize: 14,
+                }}
+              >
+                {t('me_privacy_policy')}
+              </Text>
+              <ChevronRight size={16} color={tokens.text2} />
+            </Pressable>
+          </Section>
+
+          {/* Support */}
+          <Section title={t('me_support')} tokens={tokens}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('me_support_email')}
+              onPress={emailSupport}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+                paddingVertical: 10,
+                paddingHorizontal: 11,
+                borderRadius: 9,
+                backgroundColor: tokens.card2,
+                borderWidth: 1,
+                borderColor: tokens.border,
+              }}
+            >
+              <Mail size={18} color={tokens.text2} />
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    color: tokens.text,
+                    fontWeight: '700',
+                    fontSize: 14,
+                  }}
+                >
+                  {t('me_support_email')}
+                </Text>
+                <Text
+                  style={{
+                    color: tokens.text2,
+                    fontWeight: '600',
+                    fontSize: 12,
+                  }}
+                >
+                  {t('me_support_email_addr')}
+                </Text>
+              </View>
+              <ChevronRight size={16} color={tokens.text2} />
+            </Pressable>
+          </Section>
+
           {/* Sign out */}
           <Pressable
             accessibilityRole="button"
@@ -534,7 +672,7 @@ export default function Profile() {
               borderRadius: 11,
               paddingVertical: 12,
               alignItems: 'center',
-              marginBottom: 14,
+              marginBottom: 10,
             }}
           >
             <Text
@@ -545,6 +683,35 @@ export default function Profile() {
               }}
             >
               {t('me_sign_out')}
+            </Text>
+          </Pressable>
+
+          {/* Delete account */}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('me_delete_account')}
+            onPress={confirmDeleteAccount}
+            disabled={requestDeletion.isPending}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              borderRadius: 11,
+              paddingVertical: 11,
+              marginBottom: 14,
+              opacity: requestDeletion.isPending ? 0.6 : 1,
+            }}
+          >
+            <Trash2 size={16} color={tokens.text2} />
+            <Text
+              style={{
+                color: tokens.text2,
+                fontWeight: '700',
+                fontSize: 13,
+              }}
+            >
+              {t('me_delete_account')}
             </Text>
           </Pressable>
 

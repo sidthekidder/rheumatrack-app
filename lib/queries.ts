@@ -22,6 +22,7 @@ import {
   listMedicines,
   patchAppointment,
   patchPatient,
+  requestAccountDeletion,
   scanLabReport,
   scanPrescription,
   setMedicationLog,
@@ -128,6 +129,11 @@ export const usePatchPatient = () => {
     },
   });
 };
+
+export const useRequestAccountDeletion = () =>
+  useMutation<void, Error, void>({
+    mutationFn: requestAccountDeletion,
+  });
 
 export const useBulkCreateMedicines = () => {
   const qc = useQueryClient();

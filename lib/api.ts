@@ -315,6 +315,9 @@ export const patchPatient = (body: PatientUpdate): Promise<Patient> =>
     body: JSON.stringify(body),
   });
 
+export const requestAccountDeletion = (): Promise<void> =>
+  apiFetch<void>('/patients/me/request-deletion', { method: 'POST' });
+
 export const listMedicines = (): Promise<Medicine[]> =>
   apiFetch<Medicine[]>('/medicines');
 

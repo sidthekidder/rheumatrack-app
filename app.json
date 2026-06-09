@@ -20,10 +20,12 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rheumatrack.app"
+      "bundleIdentifier": "com.rheumatrack.app",
+      "buildNumber": "1"
     },
     "android": {
       "package": "com.rheumatrack.app",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#2563EB"
