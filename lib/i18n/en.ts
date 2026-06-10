@@ -285,6 +285,7 @@ export const en = {
   diary_trend_30: 'Trend (last 30 days)',
   diary_today: "Today's entry",
   diary_no_history: 'Log a diary entry to see your trend.',
+  diary_trend_need_more: 'Log more days to see your trend.',
   update_entry: 'Update Entry',
   save_entry: 'Save Entry',
 

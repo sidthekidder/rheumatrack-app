@@ -1,7 +1,7 @@
 import { LayoutChangeEvent } from 'react-native';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg';
+import { Circle, Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg';
 import type { FlareEntry } from '@/lib/api';
 import { useTheme } from '@/lib/themeStore';
 import { useT } from '@/lib/i18n/useT';
@@ -46,6 +46,11 @@ export default function FlareGraph({ entries, days = 30 }: FlareGraphProps) {
       <SubChart title="Pain" max={10} color="#EF4444" recent={recent} valueOf={(e) => e.pain} width={Math.max(width - PADDING_X * 2, 1)} dateRange={dateRange} />
       <SubChart title="Stiffness (min)" max={120} color="#F59E0B" recent={recent} valueOf={(e) => e.stiffnessMin} width={Math.max(width - PADDING_X * 2, 1)} dateRange={dateRange} />
       <SubChart title="Fatigue" max={10} color="#3B82F6" recent={recent} valueOf={(e) => e.fatigue} width={Math.max(width - PADDING_X * 2, 1)} dateRange={dateRange} />
+      {recent.length < 2 && (
+        <Text style={{ color: tokens.text2, fontSize: 12, textAlign: 'center', marginTop: 8 }}>
+          {t('diary_trend_need_more')}
+        </Text>
+      )}
     </View>
   );
 }
@@ -86,8 +91,14 @@ function SubChart({ title, max, color, recent, valueOf, width, dateRange }: SubC
             <Stop offset="1" stopColor={color} stopOpacity="0.05" />
           </LinearGradient>
         </Defs>
-        <Path d={areaPath(points, SUB_HEIGHT - PADDING_Y)} fill={`url(#${gradId})`} />
-        <Path d={polylinePath(points)} stroke={color} strokeWidth={2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        {points.length >= 2 ? (
+          <>
+            <Path d={areaPath(points, SUB_HEIGHT - PADDING_Y)} fill={`url(#${gradId})`} />
+            <Path d={polylinePath(points)} stroke={color} strokeWidth={2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          </>
+        ) : points.length === 1 ? (
+          <Circle cx={width / 2} cy={points[0].y} r={4} fill={color} />
+        ) : null}
       </Svg>
     </View>
   );

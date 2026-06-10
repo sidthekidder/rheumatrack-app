@@ -284,6 +284,7 @@ export const hi: Record<StringKey, string> = {
   diary_trend_30: 'ट्रेंड (पिछले 30 दिन)',
   diary_today: 'आज की एंट्री',
   diary_no_history: 'अपना ट्रेंड देखने के लिए डायरी एंट्री लॉग करें।',
+  diary_trend_need_more: 'ट्रेंड देखने के लिए और दिनों की एंट्री लॉग करें।',
   update_entry: 'एंट्री अपडेट करें',
   save_entry: 'एंट्री सहेजें',
 
