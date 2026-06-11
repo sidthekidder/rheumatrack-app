@@ -127,7 +127,7 @@ function SplashPill({ label }: { label: string }) {
 
 // Segments reachable without a session. Play Store / App Store require the
 // privacy policy URL to be publicly accessible.
-const PUBLIC_SEGMENTS: ReadonlySet<string> = new Set(['(auth)', 'privacy', 'delete-account']);
+const PUBLIC_SEGMENTS: ReadonlySet<string> = new Set(['(auth)', 'privacy', 'delete-account', 'publisher']);
 
 function useAuthGuard(session: Session | null, initialised: boolean) {
   const segments = useSegments();
