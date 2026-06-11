@@ -3,9 +3,7 @@ import { Stack } from 'expo-router';
 
 const LAST_UPDATED = '2026-06-11';
 const LEGAL_NAME = 'NIKALAS PHARMACY';
-const BRAND = 'Immunocare';
 const SUPPORT_EMAIL = 'rheumatrack.support@gmail.com';
-const GSTIN = '27AAXFN3667K1ZC';
 const ADDRESS_LINE_1 = '29/2, Nikalas Tower, Central Bazar Road';
 const ADDRESS_LINE_2 = 'Ramdas Peth, Nagpur, Maharashtra 440010, India';
 
@@ -24,18 +22,15 @@ export default function Publisher() {
         <P>
           <B>{LEGAL_NAME}</B> is a registered Indian pharmacy partnership
           based in Nagpur, Maharashtra. We publish the <B>RheumaTrack</B>{' '}
-          mobile and web application under our <B>{BRAND}</B> brand.
-          RheumaTrack is a self-tracking journal for people living with
-          rheumatic conditions — it helps patients record daily symptoms,
-          medications, and lab values to share with their treating
+          mobile and web application — a self-tracking journal for people
+          living with rheumatic conditions. It helps patients record daily
+          symptoms, medications, and lab values to share with their treating
           rheumatologist.
         </P>
 
         <H2>Business details</H2>
         <Bullet><B>Legal name:</B> {LEGAL_NAME}</Bullet>
-        <Bullet><B>Brand name:</B> {BRAND}</Bullet>
         <Bullet><B>Constitution:</B> Partnership Firm</Bullet>
-        <Bullet><B>GSTIN:</B> {GSTIN}</Bullet>
         <Bullet><B>Registered address:</B> {ADDRESS_LINE_1}, {ADDRESS_LINE_2}</Bullet>
         <Bullet><B>Country of operation:</B> India</Bullet>
 
