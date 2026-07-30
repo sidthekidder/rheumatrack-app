@@ -50,8 +50,8 @@ export default function BottomTabBar({ state, navigation }: BottomTabBarProps) {
         borderTopWidth: 1,
         borderTopColor: tokens.border,
         paddingTop: 6,
-        paddingBottom: Math.max(insets.bottom, 6),
-        height: 64 + Math.max(insets.bottom, 0),
+        paddingBottom: Math.max(insets.bottom, 10),
+        height: 64 + Math.max(insets.bottom, 10),
       }}
     >
       {orderedRoutes.map((route) => {

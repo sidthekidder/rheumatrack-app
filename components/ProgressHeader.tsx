@@ -1,5 +1,6 @@
 import { Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Activity } from 'lucide-react-native';
 import { useT } from '@/lib/i18n/useT';
 import { useTheme } from '@/lib/themeStore';
@@ -16,6 +17,7 @@ interface Props {
 export default function ProgressHeader({ patientName, diagnosis, totalDue, totalTaken, isLoading }: Props) {
   const { tokens } = useTheme();
   const t = useT();
+  const insets = useSafeAreaInsets();
   const pct = totalDue > 0 ? Math.round((totalTaken / totalDue) * 100) : 0;
   const firstName = patientName?.split(' ')[0];
 
@@ -24,7 +26,7 @@ export default function ProgressHeader({ patientName, diagnosis, totalDue, total
       colors={tokens.header.colors}
       start={tokens.header.start}
       end={tokens.header.end}
-      style={{ paddingTop: 22, paddingBottom: 18, paddingHorizontal: 18 }}
+      style={{ paddingTop: insets.top + 12, paddingBottom: 18, paddingHorizontal: 18 }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <View style={{ flexShrink: 1 }}>
