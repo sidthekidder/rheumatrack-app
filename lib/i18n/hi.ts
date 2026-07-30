@@ -501,6 +501,8 @@ export const hi: Record<StringKey, string> = {
   medicine_scheduled_singular: '1 दवा निर्धारित',
   no_medicines_scheduled_today: 'आज कोई दवा निर्धारित नहीं',
   sends_health_card_hint: 'नाम, दवाएँ, अनुपालन और असामान्य लैब भेजता है — टाइप करने की ज़रूरत नहीं',
+  no_doctor_phone_title: 'डॉक्टर का नंबर नहीं है',
+  no_doctor_phone_body: 'इस सुविधा का उपयोग करने के लिए Me → Profile → Your Doctor में अपने डॉक्टर का WhatsApp नंबर जोड़ें।',
 
   // Edit history (medication log audit trail)
   edit_history: 'संपादन इतिहास',

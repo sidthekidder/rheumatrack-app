@@ -1,4 +1,4 @@
-import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MessageCircle, Stethoscope } from 'lucide-react-native';
 import Svg, { Circle } from 'react-native-svg';
@@ -215,11 +215,15 @@ export default function HealthCard() {
   });
 
   const onShare = () => {
+    if (!patient.doctorPhone) {
+      Alert.alert(
+        t('no_doctor_phone_title'),
+        t('no_doctor_phone_body'),
+      );
+      return;
+    }
     const encoded = encodeURIComponent(shareText);
-    const url = patient.doctorPhone
-      ? `https://wa.me/${waPhone(patient.doctorPhone)}?text=${encoded}`
-      : `https://wa.me/?text=${encoded}`;
-    Linking.openURL(url);
+    Linking.openURL(`https://wa.me/${waPhone(patient.doctorPhone)}?text=${encoded}`);
   };
 
   const ring = ringColor(compliancePct);

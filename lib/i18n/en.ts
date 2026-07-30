@@ -502,6 +502,8 @@ export const en = {
   medicine_scheduled_singular: '1 medicine scheduled',
   no_medicines_scheduled_today: 'No medicines scheduled today',
   sends_health_card_hint: 'Sends name, medicines, compliance and abnormal labs — no typing needed',
+  no_doctor_phone_title: "Doctor's number missing",
+  no_doctor_phone_body: "Add your doctor's WhatsApp number in Me → Profile → Your Doctor to use this feature.",
 
   // Edit history (medication log audit trail)
   edit_history: 'Edit history',
