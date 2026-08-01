@@ -25,6 +25,9 @@ interface DoctorForm {
   hospital: string;
 }
 
+const KNOWN_DOCTORS: Array<{ name: string; phone: string }> = [
+  { name: 'Dr. Tanmay Gandhi', phone: '9730654325' },
+];
 
 export default function DoctorDetails() {
   const t = useT();
@@ -170,6 +173,30 @@ export default function DoctorDetails() {
           </View>
 
           <Lbl>{t('onb_doctor_name_req')}</Lbl>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+            {KNOWN_DOCTORS.map((doc) => {
+              const isSelected = d.name === doc.name && d.phone === doc.phone;
+              return (
+                <Pressable
+                  key={doc.name}
+                  accessibilityRole="button"
+                  onPress={() => setD({ ...d, name: doc.name, phone: doc.phone })}
+                  style={{
+                    backgroundColor: isSelected ? '#0D9488' : tokens.card,
+                    borderWidth: 1,
+                    borderColor: isSelected ? '#0D9488' : tokens.border,
+                    borderRadius: 999,
+                    paddingVertical: 7,
+                    paddingHorizontal: 14,
+                  }}
+                >
+                  <Text style={{ color: isSelected ? 'white' : tokens.text, fontWeight: '700', fontSize: 13 }}>
+                    {doc.name}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
           <TextInput
             value={d.name}
             onChangeText={(v) => setD({ ...d, name: v })}
