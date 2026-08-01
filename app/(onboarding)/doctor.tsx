@@ -34,9 +34,9 @@ export default function DoctorDetails() {
   const patient = useOnboardingStore((s) => s.patient);
 
   const [d, setD] = useState<DoctorForm>({
-    name: '',
+    name: 'Dr. Tanmay Gandhi',
     specialty: 'Rheumatologist',
-    phone: '',
+    phone: '9730654325',
     hospital: '',
   });
   const [errMsg, setErrMsg] = useState<string | null>(null);
