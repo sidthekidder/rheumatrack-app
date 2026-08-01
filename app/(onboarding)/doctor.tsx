@@ -25,13 +25,6 @@ interface DoctorForm {
   hospital: string;
 }
 
-const SPECIALTIES = [
-  'Rheumatologist',
-  'General Physician',
-  'Orthopedic',
-  'Immunologist',
-  'Internal Medicine',
-];
 
 export default function DoctorDetails() {
   const t = useT();
@@ -185,47 +178,7 @@ export default function DoctorDetails() {
             style={inp}
           />
 
-          <Lbl>{t('specialty')}</Lbl>
-          <View
-            style={{
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              gap: 6,
-              marginBottom: 11,
-            }}
-          >
-            {SPECIALTIES.map((s) => {
-              const isSelected = d.specialty === s;
-              return (
-                <Pressable
-                  key={s}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: isSelected }}
-                  onPress={() => setD({ ...d, specialty: s })}
-                  style={{
-                    backgroundColor: isSelected ? '#0D9488' : tokens.card,
-                    borderWidth: 1,
-                    borderColor: isSelected ? '#0D9488' : tokens.border,
-                    borderRadius: 999,
-                    paddingVertical: 7,
-                    paddingHorizontal: 12,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: isSelected ? 'white' : tokens.text,
-                      fontWeight: '700',
-                      fontSize: 13,
-                    }}
-                  >
-                    {s}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-
-          <Lbl>{`${t('whatsapp_number')} *`}</Lbl>
+<Lbl>{`${t('whatsapp_number')} *`}</Lbl>
           <View
             style={{
               flexDirection: 'row',
