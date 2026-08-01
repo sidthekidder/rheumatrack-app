@@ -40,7 +40,6 @@ import { useT } from '@/lib/i18n/useT';
 import type { StringKey } from '@/lib/i18n/en';
 import DoctorSection from './DoctorSection';
 import LanguageToggle from './LanguageToggle';
-import QRPlaceholder from './QRPlaceholder';
 
 interface ProfileForm {
   name: string;
@@ -522,9 +521,6 @@ export default function Profile() {
 
           {/* Language */}
           <LanguageToggle />
-
-          {/* QR Code */}
-          <QRPlaceholder />
 
           {/* Emergency */}
           <Section tokens={tokens}>
